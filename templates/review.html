@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Your Resume - Resume AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .review-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+        }
+        
+        .resume-display {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 40px;
+            min-height: 800px;
+            position: relative;
+        }
+        
+        .resume-content {
+            font-family: 'Calibri', 'Arial', sans-serif;
+            line-height: 1.5;
+            color: #333;
+            white-space: pre-wrap;
+            font-size: 11pt;
+        }
+        
+        /* Professional resume styling */
+        .resume-content h1 {
+            font-size: 24pt;
+            font-weight: bold;
+            text-align: center;
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+        }
+        
+        .resume-content .contact-info {
+            text-align: center;
+            font-size: 10pt;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        
+        .resume-content .section-header {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 20px 0 8px 0;
+            padding-bottom: 4px;
+            border-bottom: 2px solid #2c3e50;
+        }
+        
+        .resume-content .section-content {
+            margin-bottom: 15px;
+            font-size: 11pt;
+        }
+        
+        .resume-content .job-title {
+            font-weight: bold;
+            font-size: 11pt;
+            margin: 8px 0 2px 0;
+        }
+        
+        .resume-content .company-date {
+            font-style: italic;
+            font-size: 10pt;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .resume-content ul {
+            margin: 4px 0 8px 20px;
+            padding: 0;
+        }
+        
+        .resume-content li {
+            margin-bottom: 2px;
+            font-size: 11pt;
+        }
+        
+        .edit-textarea {
+            width: 100%;
+            min-height: 600px;
+            padding: 20px;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            background: #f8f9fa;
+            display: none;
+        }
+        
+        .control-panel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 25px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .control-panel h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+        }
+        
+        .style-selector {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .loading-content {
+            text-align: center;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            z-index: 1001;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .review-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .control-panel {
+                position: static;
+                order: -1;
+            }
+            
+            .resume-display {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="review-container">
+        <div class="resume-display">
+            <div id="resume-content" class="resume-content">{{ resume_text|e }}</div>
+            <textarea id="edit-textarea" class="edit-textarea">{{ resume_text|e }}</textarea>
+        </div>
+        
+        <div class="control-panel">
+            <h3>Resume Controls</h3>
+            
+            <div class="control-group">
+                <label for="style-selector">Resume Style:</label>
+                <select id="style-selector" class="style-selector">
+                    <option value="simple" {{ 'selected' if style == 'simple' else '' }}>Simple</option>
+                    <option value="modern" {{ 'selected' if style == 'modern' else '' }}>Modern</option>
+                    <option value="academic" {{ 'selected' if style == 'academic' else '' }}>Academic</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <button id="edit-btn" class="btn btn-warning">✏️ Edit Resume</button>
+                <button id="save-btn" class="btn btn-success" style="display: none;">💾 Save Changes</button>
+                <button id="cancel-btn" class="btn btn-secondary" style="display: none;">❌ Cancel</button>
+            </div>
+            
+            <div class="control-group">
+                <button id="download-pdf" class="btn btn-primary">📄 Download PDF</button>
+                <button id="download-docx" class="btn btn-primary">📝 Download DOCX</button>
+            </div>
+            
+            <div class="control-group">
+                <button id="regenerate-btn" class="btn btn-secondary">🔄 Regenerate Resume</button>
+                <button id="start-over-btn" class="btn btn-secondary">🏠 Start Over</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Processing your request...</p>
+        </div>
+    </div>
+
+    <script>
+        let isEditing = false;
+        let originalContent = '';
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            originalContent = document.getElementById('edit-textarea').value;
+            applyMinimalStyling();
+            console.log('Page loaded, original content length:', originalContent.length);
+        });
+        
+        function applyMinimalStyling() {
+            const resumeContent = document.getElementById('resume-content');
+            if (!resumeContent) return;
+            
+            let content = resumeContent.textContent;
+            const lines = content.split('\n');
+            let styledContent = '';
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                const trimmedLine = line.trim();
+                
+                // First line (candidate name) - Black color, centered, 2pt font increase
+                if (i === 0 && trimmedLine && !trimmedLine.includes('|') && !trimmedLine.includes('@')) {
+                    styledContent += `<div style="color: black; font-weight: bold; text-align: center; font-size: 13pt;">${line}</div>\n`;
+                }
+                // Section headers (followed by horizontal line) - Only dark blue color
+                else if (trimmedLine && i + 1 < lines.length && lines[i + 1].trim().match(/^-+$/)) {
+                    styledContent += `<span style="color: #1e3a8a; font-weight: bold;">${line}</span>\n`;
+                }
+                // Horizontal lines - dark blue color
+                else if (trimmedLine.match(/^-+$/)) {
+                    styledContent += `<span style="color: #1e3a8a;">${line}</span>\n`;
+                }
+                // All other content - no changes at all
+                else {
+                    styledContent += `${line}\n`;
+                }
+            }
+            
+            resumeContent.innerHTML = `<pre style="font-family: inherit; margin: 0; padding: 0; white-space: pre-wrap;">${styledContent}</pre>`;
+        }
+        
+        function setupEventListeners() {
+            // Edit functionality
+            document.getElementById('edit-btn').addEventListener('click', enterEditMode);
+            document.getElementById('save-btn').addEventListener('click', saveChanges);
+            document.getElementById('cancel-btn').addEventListener('click', cancelEdit);
+            
+            // Style change
+            document.getElementById('style-selector').addEventListener('change', changeStyle);
+            
+            // Download buttons
+            document.getElementById('download-pdf').addEventListener('click', () => downloadResume('pdf'));
+            document.getElementById('download-docx').addEventListener('click', () => downloadResume('docx'));
+            
+            // Navigation buttons
+            document.getElementById('regenerate-btn').addEventListener('click', regenerateResume);
+            document.getElementById('start-over-btn').addEventListener('click', startOver);
+        }
+        
+        function enterEditMode() {
+            console.log('Entering edit mode');
+            isEditing = true;
+            
+            const resumeContent = document.getElementById('resume-content');
+            const editTextarea = document.getElementById('edit-textarea');
+            const editBtn = document.getElementById('edit-btn');
+            const saveBtn = document.getElementById('save-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+            
+            // Hide resume content and show textarea
+            resumeContent.style.display = 'none';
+            editTextarea.style.display = 'block';
+            
+            // Update buttons
+            editBtn.style.display = 'none';
+            saveBtn.style.display = 'block';
+            cancelBtn.style.display = 'block';
+            
+            // Focus on textarea
+            editTextarea.focus();
+            
+            console.log('Edit mode activated');
+        }
+        
+        function exitEditMode() {
+            console.log('Exiting edit mode');
+            isEditing = false;
+            
+            const resumeContent = document.getElementById('resume-content');
+            const editTextarea = document.getElementById('edit-textarea');
+            const editBtn = document.getElementById('edit-btn');
+            const saveBtn = document.getElementById('save-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+            
+            // Show resume content and hide textarea
+            resumeContent.style.display = 'block';
+            editTextarea.style.display = 'none';
+            
+            // Update buttons
+            editBtn.style.display = 'block';
+            saveBtn.style.display = 'none';
+            cancelBtn.style.display = 'none';
+            
+            console.log('Edit mode deactivated');
+        }
+        
+        function saveChanges() {
+            const editTextarea = document.getElementById('edit-textarea');
+            const updatedContent = editTextarea.value;
+            
+            if (!updatedContent.trim()) {
+                alert('Resume content cannot be empty.');
+                return;
+            }
+            
+            console.log('Saving changes, content length:', updatedContent.length);
+            showLoading();
+            
+            fetch('/update_resume', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    resume_text: updatedContent,
+                    style: document.getElementById('style-selector').value
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the display content
+                    document.getElementById('resume-content').textContent = updatedContent;
+                    originalContent = updatedContent;
+                    
+                    // Reapply minimal styling
+                    applyMinimalStyling();
+                    
+                    exitEditMode();
+                    
+                    // Show success message
+                    showSuccessMessage('Resume updated successfully!');
+                    console.log('Resume saved successfully');
+                } else {
+                    alert('Error updating resume: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating resume: ' + error.message);
+            })
+            .finally(() => {
+                hideLoading();
+            });
+        }
+        
+        function cancelEdit() {
+            document.getElementById('edit-textarea').value = originalContent;
+            exitEditMode();
+        }
+        
+        function changeStyle() {
+            const newStyle = document.getElementById('style-selector').value;
+            const resumeText = document.getElementById('edit-textarea').value;
+            
+            console.log('Changing style to:', newStyle);
+            showLoading();
+            
+            fetch('/change_style', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    resume_text: resumeText,
+                    style: newStyle
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Style change doesn't affect the raw text, just the formatting
+                    console.log('Style changed successfully');
+                } else {
+                    alert('Error changing style: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error changing style');
+            })
+            .finally(() => {
+                hideLoading();
+            });
+        }
+        
+        function downloadResume(format) {
+            const editTextarea = document.getElementById('edit-textarea');
+            const resumeText = editTextarea.value;
+            const style = document.getElementById('style-selector').value;
+            
+            if (!resumeText.trim()) {
+                alert('Resume content is empty. Cannot download.');
+                return;
+            }
+            
+            console.log(`Downloading resume as ${format}`);
+            showLoading();
+            
+            fetch('/download_resume', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    resume_text: resumeText,
+                    style: style,
+                    format: format
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.blob();
+                }
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Download failed');
+                });
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `resume.${format}`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                showSuccessMessage(`Resume downloaded as ${format.toUpperCase()}`);
+                console.log(`Downloaded resume as ${format}`);
+            })
+            .catch(error => {
+                console.error('Download error:', error);
+                alert('Error downloading resume: ' + error.message);
+            })
+            .finally(() => {
+                hideLoading();
+            });
+        }
+        
+        function regenerateResume() {
+            if (confirm('This will regenerate your resume using AI. Continue?')) {
+                showLoading();
+                fetch('/regenerate_resume', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error regenerating resume: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error regenerating resume');
+                })
+                .finally(() => {
+                    hideLoading();
+                });
+            }
+        }
+        
+        function startOver() {
+            if (confirm('This will start a new resume from scratch. Continue?')) {
+                window.location.href = '/';
+            }
+        }
+        
+        function showLoading() {
+            document.getElementById('loading-overlay').style.display = 'flex';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading-overlay').style.display = 'none';
+        }
+        
+        function showSuccessMessage(message) {
+            const successMsg = document.createElement('div');
+            successMsg.className = 'success-message';
+            successMsg.textContent = message;
+            document.body.appendChild(successMsg);
+            setTimeout(() => {
+                if (document.body.contains(successMsg)) {
+                    document.body.removeChild(successMsg);
+                }
+            }, 3000);
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 's') {
+                    e.preventDefault();
+                    if (isEditing) {
+                        saveChanges();
+                    }
+                } else if (e.key === 'e') {
+                    e.preventDefault();
+                    if (!isEditing) {
+                        enterEditMode();
+                    }
+                }
+            }
+            if (e.key === 'Escape' && isEditing) {
+                cancelEdit();
+            }
+        });
+    </script>
+</body>
+</html>

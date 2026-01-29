@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generating Your Resume...</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .loading-container {
+            text-align: center;
+            max-width: 400px;
+            padding: 40px;
+        }
+
+        .loading-circle {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 40px;
+        }
+
+        .circle-bg {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .circle-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #10b981 0deg,
+                #10b981 var(--progress, 0deg),
+                transparent var(--progress, 0deg),
+                transparent 360deg
+            );
+            animation: rotate 2s linear infinite;
+        }
+
+        .circle-inner {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: calc(100% - 40px);
+            height: calc(100% - 40px);
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #1e293b;
+        }
+
+        .hourglass-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            animation: flip 2s ease-in-out infinite;
+        }
+
+        .loading-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .loading-percentage {
+            font-size: 24px;
+            font-weight: 700;
+            color: #10b981;
+            margin-top: 4px;
+        }
+
+        .main-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .status-text {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes flip {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            50% {
+                transform: rotate(180deg);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .progress-steps {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 14px;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            opacity: 1;
+            font-weight: 600;
+        }
+
+        .step.completed {
+            opacity: 0.9;
+            color: #10b981;
+        }
+
+        .step-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 12px;
+        }
+
+        .step.active .step-icon {
+            background: #10b981;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .step.completed .step-icon {
+            background: #10b981;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-container">
+        <h1 class="main-title">Please Wait...</h1>
+        <p class="subtitle">We're crafting your professional resume</p>
+        
+        <div class="loading-circle">
+            <div class="circle-bg">
+                <div class="circle-progress" id="progress-circle"></div>
+                <div class="circle-inner">
+                    <div class="hourglass-icon">⏳</div>
+                    <div class="loading-text">Loading</div>
+                    <div class="loading-percentage" id="percentage">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-steps">
+            <div class="step active" id="step-1">
+                <div class="step-icon">1</div>
+                <span>Processing your information...</span>
+            </div>
+            <div class="step" id="step-2">
+                <div class="step-icon">2</div>
+                <span>Enhancing content with AI...</span>
+            </div>
+            <div class="step" id="step-3">
+                <div class="step-icon">3</div>
+                <span>Formatting your resume...</span>
+            </div>
+            <div class="step" id="step-4">
+                <div class="step-icon">4</div>
+                <span>Preparing download...</span>
+            </div>
+        </div>
+
+        <p class="status-text" id="status-text">This usually takes 10-15 seconds</p>
+    </div>
+
+    <script>
+        let progress = 0;
+        let currentStep = 1;
+        const totalSteps = 4;
+        
+        const progressCircle = document.getElementById('progress-circle');
+        const percentageText = document.getElementById('percentage');
+        const statusText = document.getElementById('status-text');
+        
+        const steps = [
+            "Processing your information...",
+            "Enhancing content with AI...",
+            "Formatting your resume...",
+            "Preparing download..."
+        ];
+        
+        const statusMessages = [
+            "Analyzing your experience and skills...",
+            "Optimizing language and structure...",
+            "Applying professional formatting...",
+            "Almost ready! Finalizing your resume..."
+        ];
+
+        function updateProgress() {
+            progress += Math.random() * 3 + 1; // Random increment between 1-4
+            
+            if (progress > 100) progress = 100;
+            
+            // Update visual progress
+            progressCircle.style.setProperty('--progress', `${progress * 3.6}deg`);
+            percentageText.textContent = `${Math.floor(progress)}%`;
+            
+            // Update steps
+            const newStep = Math.min(Math.ceil(progress / 25), totalSteps);
+            if (newStep !== currentStep) {
+                // Mark previous steps as completed
+                for (let i = 1; i < newStep; i++) {
+                    const stepEl = document.getElementById(`step-${i}`);
+                    stepEl.classList.remove('active');
+                    stepEl.classList.add('completed');
+                    stepEl.querySelector('.step-icon').textContent = '✓';
+                }
+                
+                // Mark current step as active
+                if (newStep <= totalSteps) {
+                    const currentStepEl = document.getElementById(`step-${newStep}`);
+                    currentStepEl.classList.add('active');
+                    statusText.textContent = statusMessages[newStep - 1];
+                }
+                
+                currentStep = newStep;
+            }
+            
+            if (progress < 100) {
+                setTimeout(updateProgress, 200 + Math.random() * 300); // Random delay between 200-500ms
+            } else {
+                // Complete all steps
+                for (let i = 1; i <= totalSteps; i++) {
+                    const stepEl = document.getElementById(`step-${i}`);
+                    stepEl.classList.remove('active');
+                    stepEl.classList.add('completed');
+                    stepEl.querySelector('.step-icon').textContent = '✓';
+                }
+                statusText.textContent = "Complete! Your resume is ready.";
+                
+                // Submit the actual form after a brief delay
+                setTimeout(() => {
+                    const form = document.getElementById('hidden-form');
+                    if (form) {
+                        console.log('Submitting form to /generate');
+                        // Direct form submission instead of fetch
+                        form.submit();
+                    } else {
+                        console.log('No form found, redirecting to home');
+                        window.location.href = '/';
+                    }
+                }, 1000);
+            }
+        }
+
+        // Start the progress animation
+        setTimeout(updateProgress, 500);
+
+        // Handle form submission data from the previous page
+        const formData = sessionStorage.getItem('resumeFormData');
+        if (formData) {
+            console.log('Form data found in session storage');
+            
+            // Create hidden form with the data
+            const form = document.createElement('form');
+            form.id = 'hidden-form';
+            form.method = 'POST';
+            form.action = '/generate';
+            form.style.display = 'none';
+            
+            const data = JSON.parse(formData);
+            console.log('Parsed form data:', data);
+            
+            for (const [key, value] of Object.entries(data)) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = value;
+                form.appendChild(input);
+            }
+            
+            document.body.appendChild(form);
+            
+            // Clear the session storage
+            sessionStorage.removeItem('resumeFormData');
+        } else {
+            console.log('No form data found in session storage');
+            // If no form data, redirect back to home
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

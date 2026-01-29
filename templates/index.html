@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build Your Professional Resume</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon">📄</div>
+                    <div class="header-text">
+                        <h1>Build Your Professional Resume</h1>
+                        <p>Answer a few questions to generate your resume</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button type="button" id="preview-toggle" class="preview-toggle-btn">
+                        <span class="toggle-icon">👁️</span>
+                        Show Preview
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            <span class="flash-icon">
+                                {% if category == 'error' %}⚠️{% else %}ℹ️{% endif %}
+                            </span>
+                            {{ message }}
+                            <button type="button" class="flash-close" onclick="this.parentElement.remove()">×</button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Wizard Container -->
+            <div class="wizard-container" id="wizard-container">
+                <!-- Progress Steps -->
+                <div class="progress-steps">
+                    <div class="step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Personal Info</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Education</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Objective</div>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="step-label">Skills</div>
+                    </div>
+                    <div class="step" data-step="5">
+                        <div class="step-number">5</div>
+                        <div class="step-label">Experience</div>
+                    </div>
+                    <div class="step" data-step="6">
+                        <div class="step-number">6</div>
+                        <div class="step-label">Projects</div>
+                    </div>
+                    <div class="step" data-step="7">
+                        <div class="step-number">7</div>
+                        <div class="step-label">Custom</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 14.28%"></div>
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <form method="POST" id="resume-form" class="wizard-form">
+                    <!-- Hidden fields for style and format -->
+                    <input type="hidden" name="style" value="modern">
+                    <input type="hidden" name="export_format" value="docx">
+
+                    <!-- Step 1: Personal Info -->
+                    <div class="step-content active" data-step="1">
+                        <div class="question-card">
+                            <h3>What is your full name?</h3>
+                            <input type="text" name="name" placeholder="John Doe" required>
+                        </div>
+
+                        <div class="question-card">
+                            <h3>What is your email address?</h3>
+                            <input type="email" name="email" placeholder="john@example.com" required>
+                        </div>
+
+                        <div class="question-card">
+                            <h3>What is your phone number?</h3>
+                            <input type="tel" name="phone" placeholder="+1 (555) 123-4567" required>
+                        </div>
+
+                        <div class="question-card">
+                            <h3>Where are you located?</h3>
+                            <input type="text" name="location" placeholder="San Francisco, CA">
+                        </div>
+
+                        <div class="question-card">
+                            <h3>LinkedIn profile (optional)</h3>
+                            <input type="url" name="linkedin" placeholder="linkedin.com/in/johndoe">
+                        </div>
+
+                        <div class="question-card">
+                            <h3>Portfolio or website (optional)</h3>
+                            <input type="url" name="website" placeholder="johndoe.com">
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Education -->
+                    <div class="step-content" data-step="2">
+                        <div id="education-entries">
+                            <div class="education-entry">
+                                <div class="question-card">
+                                    <h3>Which institution did you attend?</h3>
+                                    <input type="text" name="education_institution_1" placeholder="University of California, Berkeley">
+                                </div>
+
+                                <div class="question-card">
+                                    <h3>What degree did you earn?</h3>
+                                    <input type="text" name="education_degree_1" placeholder="Bachelor of Science">
+                                </div>
+
+                                <div class="question-card">
+                                    <h3>Field of study?</h3>
+                                    <input type="text" name="education_field_1" placeholder="Computer Science">
+                                </div>
+
+                                <div class="question-card-row">
+                                    <div class="question-card">
+                                        <h3>Start date</h3>
+                                        <input type="month" name="education_start_1" placeholder="2016-09" title="Select start month and year">
+                                    </div>
+                                    <div class="question-card">
+                                        <h3>End date</h3>
+                                        <input type="month" name="education_end_1" placeholder="2020-05" title="Select end month and year">
+                                    </div>
+                                </div>
+
+                                <div class="question-card">
+                                    <h3>GPA (optional)</h3>
+                                    <input type="text" name="education_gpa_1" placeholder="3.8">
+                                </div>
+
+                                <div class="question-card">
+                                    <h3>Notable achievements or coursework (optional)</h3>
+                                    <textarea name="education_achievements_1" placeholder="Dean's List, Relevant coursework: Data Structures, Algorithms, Machine Learning"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="add-more-btn" id="add-education">
+                            + Add Another Education
+                        </button>
+                    </div>
+
+                    <!-- Step 3: Objective -->
+                    <div class="step-content" data-step="3">
+                        <div class="question-card">
+                            <h3>What is your professional objective?</h3>
+                            <textarea name="objective" rows="4" placeholder="Write a brief 2–3 sentence summary of your career goals and what you bring to the role..."></textarea>
+                            <div class="helper-text">Write a brief 2–3 sentence summary of your career goals and what you bring to the role.</div>
+                        </div>
+
+                        <div class="tips-card">
+                            <h4>Tips for a great objective:</h4>
+                            <ul>
+                                <li>Keep it concise – 2–3 sentences maximum</li>
+                                <li>Highlight key strengths</li>
+                                <li>Tailor to role</li>
+                                <li>Include measurable achievements</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Skills -->
+                    <div class="step-content" data-step="4">
+                        <div class="question-card">
+                            <h3>What are your technical and professional skills?</h3>
+                            <textarea name="skills" rows="6" placeholder="Technical Skills:
+Python, JavaScript, React, Node.js, SQL, AWS, Docker, Git
+
+Soft Skills:
+Leadership, Communication, Problem-solving, Team collaboration"></textarea>
+                        </div>
+
+                        <div class="skills-hints">
+                            <div class="hint-block">
+                                <h4>Technical Skills</h4>
+                                <p>Programming languages, frameworks, tools, technologies</p>
+                            </div>
+                            <div class="hint-block">
+                                <h4>Soft Skills</h4>
+                                <p>Communication, leadership, problem-solving, teamwork</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Experience -->
+                    <div class="step-content" data-step="5">
+                        <div id="experience-entries">
+                            <div class="experience-entry">
+                                <div class="question-card">
+                                    <h3>Company name</h3>
+                                    <input type="text" name="experience_company_1" placeholder="Google">
+                                </div>
+
+                                <div class="question-card">
+                                    <h3>Job title</h3>
+                                    <input type="text" name="experience_title_1" placeholder="Software Engineer">
+                                </div>
+
+                                <div class="question-card-row">
+                                    <div class="question-card">
+                                        <h3>Start date</h3>
+                                        <input type="month" name="experience_start_1" placeholder="2020-01" title="Select start month and year">
+                                    </div>
+                                    <div class="question-card">
+                                        <h3>End date</h3>
+                                        <input type="text" name="experience_end_1" placeholder="Present" title="Enter 'Present' if currently working, or select end date">
+                                        <div class="helper-text">Enter "Present" if you're currently working here</div>
+                                    </div>
+                                </div>
+
+                                <div class="question-card">
+                                    <h3>Responsibilities</h3>
+                                    <textarea name="experience_responsibilities_1" rows="4" placeholder="Developed web applications using React and Node.js
+Collaborated with cross-functional teams
+Participated in code reviews and technical discussions"></textarea>
+                                </div>
+
+                                <div class="question-card">
+                                    <h3>Key achievements</h3>
+                                    <textarea name="experience_achievements_1" rows="3" placeholder="• Improved system performance by 40% through optimization
+• Led migration to cloud infrastructure
+• Mentored 3 junior developers"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="add-more-btn" id="add-experience">
+                            + Add Another Experience
+                        </button>
+                    </div>
+
+                    <!-- Step 6: Projects -->
+                    <div class="step-content" data-step="6">
+                        <div id="project-entries">
+                            <div class="project-entry">
+                                <div class="question-card">
+                                    <h3>Project name</h3>
+                                    <input type="text" name="project_name_1" placeholder="E-commerce Platform">
+                                </div>
+
+                                <div class="question-card">
+                                    <h3>Description</h3>
+                                    <textarea name="project_description_1" rows="3" placeholder="Built a full-stack e-commerce platform with user authentication, payment processing, and inventory management"></textarea>
+                                </div>
+
+                                <div class="question-card">
+                                    <h3>Technologies</h3>
+                                    <input type="text" name="project_technologies_1" placeholder="React, Node.js, MongoDB, Stripe API">
+                                </div>
+
+                                <div class="question-card">
+                                    <h3>Project link (optional)</h3>
+                                    <input type="url" name="project_link_1" placeholder="https://github.com/johndoe/ecommerce">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="add-more-btn" id="add-project">
+                            + Add Another Project
+                        </button>
+                    </div>
+
+                    <!-- Step 7: Custom -->
+                    <div class="step-content" data-step="7">
+                        <div class="custom-section-header">
+                            <h3>Add Custom Sections</h3>
+                            <div class="info-card">
+                                <p>Create additional sections for things like Certifications, Languages, Hobbies, Volunteer Work, Publications, or anything else you'd like to highlight.</p>
+                            </div>
+                        </div>
+
+                        <div id="custom-sections">
+                            <!-- Custom sections will be added here dynamically -->
+                        </div>
+
+                        <button type="button" class="add-custom-btn" id="add-custom-section">
+                            + Add Custom Section
+                        </button>
+
+                        <div class="empty-state" id="custom-empty-state">
+                            <p>No custom sections yet. Click the button above to add one.</p>
+                        </div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="step-navigation">
+                        <button type="button" id="prev-btn" class="nav-btn prev-btn" disabled>
+                            ← Back
+                        </button>
+                        <button type="button" id="next-btn" class="nav-btn next-btn">
+                            Next →
+                        </button>
+                        <button type="submit" id="generate-btn" class="nav-btn generate-btn" style="display: none;">
+                            ✨ Generate Resume
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Preview Panel -->
+            <div class="preview-panel" id="preview-panel">
+                <div class="preview-header">
+                    <h3>Live Preview</h3>
+                    <div class="preview-controls">
+                        <button type="button" id="refresh-preview" class="btn-icon-small" title="Refresh Preview">
+                            🔄
+                        </button>
+                        <button type="button" id="close-preview" class="btn-icon-small" title="Close Preview">
+                            ✕
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="preview-content" id="preview-content">
+                    <div class="preview-placeholder">
+                        <div class="placeholder-icon">📄</div>
+                        <h4>Live Resume Preview</h4>
+                        <p>Your resume will appear here as you fill out the form. Click "Show Preview" to get started.</p>
+                        <ul class="preview-features">
+                            <li>✨ Real-time updates</li>
+                            <li>🎨 Style-aware formatting</li>
+                            <li>📊 Professional layout</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+    </div>
+
+    <script>
+        // Wizard state
+        let currentStep = 1;
+        const totalSteps = 7;
+        let previewVisible = false;
+        let educationCount = 1;
+        let experienceCount = 1;
+        let projectCount = 1;
+        let customSectionCount = 0;
+
+        // Initialize wizard
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStepDisplay();
+            updateNavigation();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            console.log('Setting up event listeners...');
+            
+            // Navigation buttons
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const generateBtn = document.getElementById('generate-btn');
+            
+            console.log('Button elements found:', {
+                prevBtn: !!prevBtn,
+                nextBtn: !!nextBtn, 
+                generateBtn: !!generateBtn
+            });
+            
+            if (prevBtn) prevBtn.addEventListener('click', previousStep);
+            if (nextBtn) nextBtn.addEventListener('click', nextStep);
+            
+            // Preview toggle
+            const previewToggle = document.getElementById('preview-toggle');
+            const closePreview = document.getElementById('close-preview');
+            const refreshPreview = document.getElementById('refresh-preview');
+            
+            if (previewToggle) previewToggle.addEventListener('click', togglePreview);
+            if (closePreview) closePreview.addEventListener('click', hidePreview);
+            if (refreshPreview) refreshPreview.addEventListener('click', generatePreview);
+            
+            // Add more buttons
+            const addEducation = document.getElementById('add-education');
+            const addExperience = document.getElementById('add-experience');
+            const addProject = document.getElementById('add-project');
+            const addCustom = document.getElementById('add-custom-section');
+            
+            if (addEducation) addEducation.addEventListener('click', addEducationEntry);
+            if (addExperience) addExperience.addEventListener('click', addExperienceEntry);
+            if (addProject) addProject.addEventListener('click', addProjectEntry);
+            if (addCustom) addCustom.addEventListener('click', addCustomSection);
+            
+            // Form submission - prevent default form submission
+            const form = document.getElementById('resume-form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('Form submission prevented');
+                    return false;
+                });
+            }
+            
+            // Generate button - handle manually
+            if (generateBtn) {
+                generateBtn.addEventListener('click', function(e) {
+                    console.log('Generate button clicked via addEventListener');
+                    handleFormSubmit(e);
+                });
+                
+                // Also set onclick as backup
+                generateBtn.onclick = function(e) {
+                    console.log('Generate button clicked via onclick');
+                    handleFormSubmit(e);
+                };
+                
+                console.log('Generate button event listeners attached');
+            } else {
+                console.error('Generate button not found!');
+            }
+            
+            // Real-time preview updates
+            let previewTimeout;
+            document.addEventListener('input', function(e) {
+                if (previewVisible && e.target.matches('input, textarea, select')) {
+                    clearTimeout(previewTimeout);
+                    previewTimeout = setTimeout(generatePreview, 1500);
+                }
+            });
+            
+            console.log('All event listeners set up successfully');
+        }
+
+        function updateStepDisplay() {
+            // Update progress steps
+            document.querySelectorAll('.step').forEach((step, index) => {
+                const stepNumber = index + 1;
+                if (stepNumber < currentStep) {
+                    step.classList.add('completed');
+                    step.classList.remove('active');
+                } else if (stepNumber === currentStep) {
+                    step.classList.add('active');
+                    step.classList.remove('completed');
+                } else {
+                    step.classList.remove('active', 'completed');
+                }
+            });
+
+            // Update progress bar
+            const progressPercentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            document.querySelector('.progress-fill').style.width = progressPercentage + '%';
+
+            // Show/hide step content
+            document.querySelectorAll('.step-content').forEach((content, index) => {
+                if (index + 1 === currentStep) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const generateBtn = document.getElementById('generate-btn');
+
+            console.log(`Updating navigation - Current step: ${currentStep}, Total steps: ${totalSteps}`);
+
+            // Previous button
+            prevBtn.disabled = currentStep === 1;
+
+            // Next/Generate button
+            if (currentStep === totalSteps) {
+                nextBtn.style.display = 'none';
+                generateBtn.style.display = 'inline-flex';
+                generateBtn.disabled = false; // Ensure it's enabled
+                generateBtn.style.cursor = 'pointer'; // Ensure proper cursor
+                
+                console.log('Generate button should now be visible and enabled');
+                
+                // Ensure the generate button has the correct event listener
+                generateBtn.onclick = function(e) {
+                    console.log('Generate button clicked via onclick');
+                    handleFormSubmit(e);
+                };
+            } else {
+                nextBtn.style.display = 'inline-flex';
+                generateBtn.style.display = 'none';
+                console.log(`Showing next button for step ${currentStep}`);
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepDisplay();
+                updateNavigation();
+                scrollToTop();
+            }
+        }
+
+        function nextStep() {
+            if (validateCurrentStep() && currentStep < totalSteps) {
+                currentStep++;
+                updateStepDisplay();
+                updateNavigation();
+                scrollToTop();
+            }
+        }
+
+        function validateCurrentStep() {
+            const currentStepContent = document.querySelector(`.step-content[data-step="${currentStep}"]`);
+            const requiredFields = currentStepContent.querySelectorAll('input[required], textarea[required]');
+            
+            for (let field of requiredFields) {
+                if (!field.value.trim()) {
+                    field.focus();
+                    field.classList.add('error');
+                    setTimeout(() => field.classList.remove('error'), 3000);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function scrollToTop() {
+            document.querySelector('.wizard-container').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            console.log('Generate button clicked!');
+            
+            // Check if button is actually enabled
+            const submitBtn = document.getElementById('generate-btn');
+            console.log('Button state:', {
+                disabled: submitBtn.disabled,
+                display: submitBtn.style.display,
+                cursor: getComputedStyle(submitBtn).cursor,
+                classList: submitBtn.classList.toString()
+            });
+            
+            // Validate required fields
+            const requiredFields = ['name', 'email', 'phone'];
+            for (let fieldName of requiredFields) {
+                const field = document.querySelector(`input[name="${fieldName}"]`);
+                if (!field || !field.value.trim()) {
+                    alert(`Please fill in the required field: ${fieldName}`);
+                    currentStep = 1;
+                    updateStepDisplay();
+                    updateNavigation();
+                    scrollToTop();
+                    return false;
+                }
+            }
+            
+            // Show loading state on button
+            submitBtn.innerHTML = '<span class="btn-icon">⏳</span> Preparing...';
+            submitBtn.disabled = true;
+            submitBtn.style.cursor = 'wait';
+            
+            // Collect all form data
+            const formData = new FormData(document.getElementById('resume-form'));
+            const formDataObj = {};
+            
+            console.log('Form data being submitted:');
+            let fieldCount = 0;
+            for (let [key, value] of formData.entries()) {
+                formDataObj[key] = value;
+                if (value && value.trim()) {
+                    fieldCount++;
+                    console.log(`${key}: ${value.substring(0, 100)}${value.length > 100 ? '...' : ''}`);
+                }
+            }
+            
+            console.log(`Total non-empty fields: ${fieldCount}`);
+            
+            // Store form data in session storage
+            sessionStorage.setItem('resumeFormData', JSON.stringify(formDataObj));
+            console.log('Form data stored in sessionStorage');
+            
+            // Redirect to loading page
+            setTimeout(() => {
+                console.log('Redirecting to loading page...');
+                window.location.href = '/loading';
+            }, 500);
+            
+            return false;
+        }
+
+        // Add more entries functions
+        function addEducationEntry() {
+            educationCount++;
+            const container = document.getElementById('education-entries');
+            const newEntry = createEducationEntry(educationCount);
+            container.appendChild(newEntry);
+        }
+
+        function addExperienceEntry() {
+            experienceCount++;
+            const container = document.getElementById('experience-entries');
+            const newEntry = createExperienceEntry(experienceCount);
+            container.appendChild(newEntry);
+        }
+
+        function addProjectEntry() {
+            projectCount++;
+            const container = document.getElementById('project-entries');
+            const newEntry = createProjectEntry(projectCount);
+            container.appendChild(newEntry);
+        }
+
+        function addCustomSection() {
+            customSectionCount++;
+            const container = document.getElementById('custom-sections');
+            const emptyState = document.getElementById('custom-empty-state');
+            
+            const newSection = createCustomSection(customSectionCount);
+            container.appendChild(newSection);
+            
+            if (emptyState) {
+                emptyState.style.display = 'none';
+            }
+        }
+
+        // Create entry functions
+        function createEducationEntry(index) {
+            const div = document.createElement('div');
+            div.className = 'education-entry';
+            div.innerHTML = `
+                <div class="entry-header">
+                    <h4>Education ${index}</h4>
+                    <button type="button" class="remove-entry" onclick="removeEntry(this)">×</button>
+                </div>
+                <div class="question-card">
+                    <h3>Which institution did you attend?</h3>
+                    <input type="text" name="education_institution_${index}" placeholder="University of California, Berkeley">
+                </div>
+                <div class="question-card">
+                    <h3>What degree did you earn?</h3>
+                    <input type="text" name="education_degree_${index}" placeholder="Bachelor of Science">
+                </div>
+                <div class="question-card">
+                    <h3>Field of study?</h3>
+                    <input type="text" name="education_field_${index}" placeholder="Computer Science">
+                </div>
+                <div class="question-card-row">
+                    <div class="question-card">
+                        <h3>Start date</h3>
+                        <input type="month" name="education_start_${index}" placeholder="2016-09" title="Select start month and year">
+                    </div>
+                    <div class="question-card">
+                        <h3>End date</h3>
+                        <input type="month" name="education_end_${index}" placeholder="2020-05" title="Select end month and year">
+                    </div>
+                </div>
+                <div class="question-card">
+                    <h3>GPA (optional)</h3>
+                    <input type="text" name="education_gpa_${index}" placeholder="3.8">
+                </div>
+                <div class="question-card">
+                    <h3>Notable achievements or coursework (optional)</h3>
+                    <textarea name="education_achievements_${index}" placeholder="Dean's List, Relevant coursework: Data Structures, Algorithms, Machine Learning"></textarea>
+                </div>
+            `;
+            return div;
+        }
+
+        function createExperienceEntry(index) {
+            const div = document.createElement('div');
+            div.className = 'experience-entry';
+            div.innerHTML = `
+                <div class="entry-header">
+                    <h4>Experience ${index}</h4>
+                    <button type="button" class="remove-entry" onclick="removeEntry(this)">×</button>
+                </div>
+                <div class="question-card">
+                    <h3>Company name</h3>
+                    <input type="text" name="experience_company_${index}" placeholder="Google">
+                </div>
+                <div class="question-card">
+                    <h3>Job title</h3>
+                    <input type="text" name="experience_title_${index}" placeholder="Software Engineer">
+                </div>
+                <div class="question-card-row">
+                    <div class="question-card">
+                        <h3>Start date</h3>
+                        <input type="month" name="experience_start_${index}" placeholder="2020-01" title="Select start month and year">
+                    </div>
+                    <div class="question-card">
+                        <h3>End date</h3>
+                        <input type="text" name="experience_end_${index}" placeholder="Present" title="Enter 'Present' if currently working, or select end date">
+                        <div class="helper-text">Enter "Present" if you're currently working here</div>
+                    </div>
+                </div>
+                <div class="question-card">
+                    <h3>Responsibilities</h3>
+                    <textarea name="experience_responsibilities_${index}" rows="4" placeholder="Developed web applications using React and Node.js
+Collaborated with cross-functional teams
+Participated in code reviews and technical discussions"></textarea>
+                </div>
+                <div class="question-card">
+                    <h3>Key achievements</h3>
+                    <textarea name="experience_achievements_${index}" rows="3" placeholder="• Improved system performance by 40% through optimization
+• Led migration to cloud infrastructure
+• Mentored 3 junior developers"></textarea>
+                </div>
+            `;
+            return div;
+        }
+
+        function createProjectEntry(index) {
+            const div = document.createElement('div');
+            div.className = 'project-entry';
+            div.innerHTML = `
+                <div class="entry-header">
+                    <h4>Project ${index}</h4>
+                    <button type="button" class="remove-entry" onclick="removeEntry(this)">×</button>
+                </div>
+                <div class="question-card">
+                    <h3>Project name</h3>
+                    <input type="text" name="project_name_${index}" placeholder="E-commerce Platform">
+                </div>
+                <div class="question-card">
+                    <h3>Description</h3>
+                    <textarea name="project_description_${index}" rows="3" placeholder="Built a full-stack e-commerce platform with user authentication, payment processing, and inventory management"></textarea>
+                </div>
+                <div class="question-card">
+                    <h3>Technologies</h3>
+                    <input type="text" name="project_technologies_${index}" placeholder="React, Node.js, MongoDB, Stripe API">
+                </div>
+                <div class="question-card">
+                    <h3>Project link (optional)</h3>
+                    <input type="url" name="project_link_${index}" placeholder="https://github.com/johndoe/ecommerce">
+                </div>
+            `;
+            return div;
+        }
+
+        function createCustomSection(index) {
+            const div = document.createElement('div');
+            div.className = 'custom-section';
+            div.innerHTML = `
+                <div class="entry-header">
+                    <h4>Custom Section ${index}</h4>
+                    <button type="button" class="remove-entry" onclick="removeCustomSection(this)">×</button>
+                </div>
+                <div class="question-card">
+                    <h3>Section title</h3>
+                    <input type="text" name="custom_title_${index}" placeholder="e.g., Certifications, Languages, Hobbies">
+                </div>
+                <div class="question-card">
+                    <h3>Section content</h3>
+                    <textarea name="custom_content_${index}" rows="3" placeholder="Enter content for this section..."></textarea>
+                </div>
+            `;
+            return div;
+        }
+
+        function removeEntry(button) {
+            button.closest('.education-entry, .experience-entry, .project-entry').remove();
+        }
+
+        function removeCustomSection(button) {
+            button.closest('.custom-section').remove();
+            
+            // Show empty state if no custom sections remain
+            const container = document.getElementById('custom-sections');
+            const emptyState = document.getElementById('custom-empty-state');
+            
+            if (container.children.length === 0 && emptyState) {
+                emptyState.style.display = 'block';
+            }
+        }
+
+        // Preview functionality
+        function togglePreview() {
+            if (previewVisible) {
+                hidePreview();
+            } else {
+                showPreview();
+            }
+        }
+
+        function showPreview() {
+            const toggleBtn = document.getElementById('preview-toggle');
+            const wizardContainer = document.querySelector('.wizard-container');
+            const previewPanel = document.getElementById('preview-panel');
+            
+            previewVisible = true;
+            
+            toggleBtn.innerHTML = '<span class="toggle-icon">✕</span> Hide Preview';
+            toggleBtn.classList.add('active');
+            
+            previewPanel.classList.add('visible');
+            wizardContainer.classList.add('preview-open');
+            
+            generatePreview();
+            
+            // Auto-update preview when form changes
+            const form = document.getElementById('resume-form');
+            if (form && !form.hasAttribute('data-preview-listener')) {
+                form.setAttribute('data-preview-listener', 'true');
+                form.addEventListener('input', debounce(generatePreview, 1000));
+                form.addEventListener('change', debounce(generatePreview, 500));
+            }
+        }
+        
+        // Debounce function to limit preview updates
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function hidePreview() {
+            const toggleBtn = document.getElementById('preview-toggle');
+            const wizardContainer = document.querySelector('.wizard-container');
+            const previewPanel = document.getElementById('preview-panel');
+            
+            previewVisible = false;
+            
+            toggleBtn.innerHTML = '<span class="toggle-icon">👁️</span> Show Preview';
+            toggleBtn.classList.remove('active');
+            
+            previewPanel.classList.remove('visible');
+            wizardContainer.classList.remove('preview-open');
+        }
+
+        function generatePreview() {
+            if (!previewVisible) return;
+            
+            const form = document.getElementById('resume-form');
+            const formData = new FormData(form);
+            const previewContent = document.getElementById('preview-content');
+            
+            // Debug: Log form data being sent
+            console.log('Generating preview with form data:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
+            
+            // Show loading state
+            previewContent.innerHTML = `
+                <div class="preview-loading">
+                    <div class="loading-spinner">⏳</div>
+                    <p>Generating preview...</p>
+                </div>
+            `;
+
+            // Send request to preview endpoint
+            fetch('/preview', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log('Preview response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Preview response data:', data);
+                if (data.success) {
+                    displayResumePreview(data.resume_text, data.style);
+                } else {
+                    previewContent.innerHTML = `
+                        <div class="preview-error">
+                            <div class="error-icon">⚠️</div>
+                            <h4>Preview Error</h4>
+                            <p>${data.error || 'Failed to generate preview'}</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Preview error:', error);
+                previewContent.innerHTML = `
+                    <div class="preview-error">
+                        <div class="error-icon">⚠️</div>
+                        <h4>Preview Error</h4>
+                        <p>Unable to generate preview. Please check your connection.</p>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function displayResumePreview(resumeText, style) {
+            const previewContent = document.getElementById('preview-content');
+            
+            console.log('Displaying resume preview:', resumeText.length, 'characters');
+            
+            // Convert plain text resume to HTML for display
+            const htmlContent = resumeText
+                .split('\n')
+                .map(line => {
+                    line = line.trim();
+                    if (!line) return '<br>';
+                    
+                    // Headers (all caps or specific patterns)
+                    if (line.match(/^[A-Z\s]{3,}$/) && line.length < 50) {
+                        return `<h2 class="resume-header-text">${line}</h2>`;
+                    }
+                    
+                    // Section headers (mixed case with colons)
+                    if (line.match(/^[A-Za-z\s]+:?\s*$/) && line.length < 30 && !line.includes('@') && !line.includes('(')) {
+                        return `<h3 class="resume-section-header">${line}</h3>`;
+                    }
+                    
+                    // Skip separator lines
+                    if (line.match(/^[=\-]{3,}$/)) {
+                        return '';
+                    }
+                    
+                    // Bullet points
+                    if (line.startsWith('•') || line.startsWith('▸') || line.startsWith('-') || line.startsWith('*')) {
+                        return `<div class="bullet-point">${line}</div>`;
+                    }
+                    
+                    // Contact info (contains @ or phone patterns)
+                    if (line.includes('@') || line.match(/\(\d{3}\)|\d{3}-\d{3}-\d{4}/)) {
+                        return `<p class="contact-info">${line}</p>`;
+                    }
+                    
+                    // Regular text
+                    return `<p class="resume-text">${line}</p>`;
+                })
+                .join('');
+            
+            previewContent.innerHTML = `
+                <div class="resume-preview ${style}-style">
+                    <div class="preview-header">
+                        <h4>Resume Preview (${style} style)</h4>
+                        <small>${resumeText.length} characters</small>
+                    </div>
+                    <div class="preview-content-wrapper">
+                        ${htmlContent}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft' && currentStep > 1) {
+                e.preventDefault();
+                previousStep();
+            } else if (e.key === 'ArrowRight' && currentStep < totalSteps) {
+                e.preventDefault();
+                if (validateCurrentStep()) {
+                    nextStep();
+                }
+            }
+        });
+
+        // Date formatting helper function
+        function formatDateForDisplay(dateValue) {
+            if (!dateValue) return '';
+            
+            // If it's already in YYYY-MM format, convert to readable format
+            if (dateValue.match(/^\d{4}-\d{2}$/)) {
+                const [year, month] = dateValue.split('-');
+                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                                  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                return `${monthNames[parseInt(month) - 1]} ${year}`;
+            }
+            
+            return dateValue;
+        }
+
+        // Add event listeners for date inputs to provide better UX
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add tooltips and help text for date inputs
+            const dateInputs = document.querySelectorAll('input[type="month"]');
+            dateInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    if (this.value) {
+                        this.title = `Selected: ${formatDateForDisplay(this.value)}`;
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
