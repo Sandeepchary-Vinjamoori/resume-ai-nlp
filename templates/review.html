@@ -25,65 +25,68 @@
         }
         
         .resume-content {
-            font-family: 'Calibri', 'Arial', sans-serif;
-            line-height: 1.5;
-            color: #333;
+            font-family: 'Times New Roman', serif;
+            line-height: 0.9; /* Very tight line spacing for content */
+            color: #000000;
             white-space: pre-wrap;
             font-size: 11pt;
-        }
-        
-        /* Professional resume styling */
-        .resume-content h1 {
-            font-size: 24pt;
-            font-weight: bold;
-            text-align: center;
-            margin: 0 0 8px 0;
-            color: #2c3e50;
-        }
-        
-        .resume-content .contact-info {
-            text-align: center;
-            font-size: 10pt;
-            margin-bottom: 20px;
-            color: #555;
-        }
-        
-        .resume-content .section-header {
-            font-size: 14pt;
-            font-weight: bold;
-            color: #2c3e50;
-            margin: 20px 0 8px 0;
-            padding-bottom: 4px;
-            border-bottom: 2px solid #2c3e50;
-        }
-        
-        .resume-content .section-content {
-            margin-bottom: 15px;
-            font-size: 11pt;
-        }
-        
-        .resume-content .job-title {
-            font-weight: bold;
-            font-size: 11pt;
-            margin: 8px 0 2px 0;
-        }
-        
-        .resume-content .company-date {
-            font-style: italic;
-            font-size: 10pt;
-            color: #666;
-            margin-bottom: 4px;
-        }
-        
-        .resume-content ul {
-            margin: 4px 0 8px 20px;
+            margin: 0;
             padding: 0;
         }
         
-        .resume-content li {
-            margin-bottom: 2px;
-            font-size: 11pt;
+        /* Section headings - teal/green color like the example */
+        .resume-content .resume-section-header,
+        .resume-section-header {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #2d8659 !important; /* Teal/green color like the example */
+            margin: 16px 0 4px 0; /* Large space BEFORE section to separate sections */
+            padding: 0;
+            border-bottom: 1px solid #2d8659; /* Matching underline */
+            text-transform: none; /* No uppercase, normal case like example */
+            letter-spacing: normal;
+            line-height: 1.0;
         }
+        
+        /* Main header (name) styling */
+        .resume-content .resume-header-text,
+        .resume-header-text {
+            font-size: 16pt;
+            font-weight: bold;
+            text-align: center;
+            margin: 0 0 4px 0; /* Minimal margin after name */
+            color: #000000 !important; /* Black like the example */
+            text-transform: none;
+            letter-spacing: normal;
+            line-height: 1.0;
+        }
+        
+        /* Subsection items (job titles, education entries) - reduced spacing */
+        .resume-content .resume-subsection,
+        .resume-subsection {
+            font-size: 11pt; /* Same size as all content */
+            margin: 3px 0 0 0; /* Reduced spacing between subsections */
+            padding: 0;
+            line-height: 0.9; /* Same tight spacing as all content */
+            color: #000000 !important;
+            font-weight: bold; /* Keep bold for subsection headers */
+        }
+        
+        /* All content - SAME spacing and text size for everything including subsection content */
+        .resume-content .resume-text,
+        .resume-text,
+        .resume-content .bullet-point,
+        .bullet-point,
+        .resume-content p,
+        .resume-content li,
+        .resume-content div:not(.resume-section-header):not(.resume-header-text):not(.resume-subsection) {
+            font-size: 11pt; /* Same size as subsections and all content */
+            margin: 0; /* NO margins - consistent spacing for all content */
+            padding: 0; /* NO padding */
+            line-height: 0.9; /* Same tight line spacing for all content */
+            color: #000000 !important;
+        }
+
         
         .edit-textarea {
             width: 100%;
@@ -246,6 +249,81 @@
                 padding: 20px;
             }
         }
+        
+        /* Modal Styles */
+        .auth-modal, .save-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1002;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .auth-modal-content, .save-modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .auth-modal-header, .save-modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .auth-modal-header h3, .save-modal-header h3 {
+            margin: 0;
+            color: #2c3e50;
+        }
+        
+        .auth-modal-close, .save-modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+        
+        .auth-modal-body, .save-modal-body {
+            padding: 20px;
+        }
+        
+        .auth-modal-buttons, .save-modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .save-modal-body label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .save-modal-body input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .save-modal-body input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
     </style>
 </head>
 <body>
@@ -268,6 +346,19 @@
             </div>
             
             <div class="control-group">
+                {% if user and user.is_authenticated %}
+                    {% if editing_resume_id %}
+                        <button id="update-resume-btn" class="btn btn-success">💾 Update Resume</button>
+                    {% else %}
+                        <button id="save-resume-btn" class="btn btn-success">💾 Save Resume</button>
+                    {% endif %}
+                    <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-secondary">📋 My Dashboard</a>
+                {% else %}
+                    <button id="save-resume-btn" class="btn btn-success">💾 Save Resume</button>
+                {% endif %}
+            </div>
+            
+            <div class="control-group">
                 <button id="edit-btn" class="btn btn-warning">✏️ Edit Resume</button>
                 <button id="save-btn" class="btn btn-success" style="display: none;">💾 Save Changes</button>
                 <button id="cancel-btn" class="btn btn-secondary" style="display: none;">❌ Cancel</button>
@@ -281,6 +372,41 @@
             <div class="control-group">
                 <button id="regenerate-btn" class="btn btn-secondary">🔄 Regenerate Resume</button>
                 <button id="start-over-btn" class="btn btn-secondary">🏠 Start Over</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="auth-modal" style="display: none;">
+        <div class="auth-modal-content">
+            <div class="auth-modal-header">
+                <h3>Sign in to save your resume</h3>
+                <button class="auth-modal-close">&times;</button>
+            </div>
+            <div class="auth-modal-body">
+                <p>Create an account or sign in to save your resume and access it later from your dashboard.</p>
+                <div class="auth-modal-buttons">
+                    <a href="{{ url_for('auth.signup') }}" class="btn btn-primary">Create Account</a>
+                    <a href="{{ url_for('auth.signin') }}" class="btn btn-secondary">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Save Resume Modal -->
+    <div id="save-modal" class="save-modal" style="display: none;">
+        <div class="save-modal-content">
+            <div class="save-modal-header">
+                <h3>Save Resume</h3>
+                <button class="save-modal-close">&times;</button>
+            </div>
+            <div class="save-modal-body">
+                <label for="resume-title">Resume Title:</label>
+                <input type="text" id="resume-title" placeholder="e.g., Software Engineer Resume" maxlength="200">
+                <div class="save-modal-buttons">
+                    <button id="confirm-save-btn" class="btn btn-primary">Save Resume</button>
+                    <button class="save-modal-close btn btn-secondary">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
@@ -312,29 +438,60 @@
             const lines = content.split('\n');
             let styledContent = '';
             
+            // List of actual section headers that should be blue
+            const sectionHeaders = [
+                'PROFESSIONAL SUMMARY', 'SUMMARY', 'OBJECTIVE',
+                'SKILLS', 'TECHNICAL SKILLS', 'CORE COMPETENCIES',
+                'EDUCATION', 'ACADEMIC BACKGROUND',
+                'EXPERIENCE', 'PROFESSIONAL EXPERIENCE', 'WORK EXPERIENCE',
+                'PROJECTS', 'KEY PROJECTS', 'NOTABLE PROJECTS',
+                'CERTIFICATIONS', 'CERTIFICATES', 'AWARDS',
+                'ACHIEVEMENTS', 'ACCOMPLISHMENTS'
+            ];
+            
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i];
                 const trimmedLine = line.trim();
                 
-                // First line (candidate name) - Black color, centered, 2pt font increase
+                // First line (candidate name) - Use resume-header-text class
                 if (i === 0 && trimmedLine && !trimmedLine.includes('|') && !trimmedLine.includes('@')) {
-                    styledContent += `<div style="color: black; font-weight: bold; text-align: center; font-size: 13pt;">${line}</div>\n`;
+                    styledContent += `<div class="resume-header-text">${line}</div>\n`;
                 }
-                // Section headers (followed by horizontal line) - Only dark blue color
-                else if (trimmedLine && i + 1 < lines.length && lines[i + 1].trim().match(/^-+$/)) {
-                    styledContent += `<span style="color: #1e3a8a; font-weight: bold;">${line}</span>\n`;
+                // Only actual section headers should be blue
+                else if (sectionHeaders.includes(trimmedLine.toUpperCase())) {
+                    styledContent += `<div class="resume-section-header">${line}</div>\n`;
                 }
-                // Horizontal lines - dark blue color
+                // Horizontal lines - skip them as they're just formatting
                 else if (trimmedLine.match(/^-+$/)) {
-                    styledContent += `<span style="color: #1e3a8a;">${line}</span>\n`;
+                    // Skip horizontal lines, they're just formatting
+                    continue;
                 }
-                // All other content - no changes at all
+                // Detect subsections (job titles, education entries, project names)
+                else if (trimmedLine && (
+                    // Job titles with company names
+                    (trimmedLine.includes(',') && (trimmedLine.includes('Intern') || trimmedLine.includes('Engineer') || trimmedLine.includes('Developer') || trimmedLine.includes('Manager'))) ||
+                    // Education entries
+                    (trimmedLine.includes('University') || trimmedLine.includes('College') || trimmedLine.includes('Bachelor') || trimmedLine.includes('Master') || trimmedLine.includes('Intermediate')) ||
+                    // Project names (usually short lines that aren't bullet points)
+                    (trimmedLine.length < 50 && !trimmedLine.startsWith('•') && !trimmedLine.startsWith('-') && !trimmedLine.startsWith('*') && !trimmedLine.includes(':') && !trimmedLine.includes('|'))
+                )) {
+                    styledContent += `<div class="resume-subsection">${line}</div>\n`;
+                }
+                // Bullet points - Use bullet-point class
+                else if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-') || trimmedLine.startsWith('*')) {
+                    styledContent += `<div class="bullet-point">${line}</div>\n`;
+                }
+                // All other content - Use resume-text class (will be black)
+                else if (trimmedLine) {
+                    styledContent += `<div class="resume-text">${line}</div>\n`;
+                }
+                // Empty lines
                 else {
-                    styledContent += `${line}\n`;
+                    styledContent += `<div>${line}</div>\n`;
                 }
             }
             
-            resumeContent.innerHTML = `<pre style="font-family: inherit; margin: 0; padding: 0; white-space: pre-wrap;">${styledContent}</pre>`;
+            resumeContent.innerHTML = styledContent;
         }
         
         function setupEventListeners() {
@@ -616,6 +773,130 @@
                 cancelEdit();
             }
         });
+
+        // Save Resume Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const saveResumeBtn = document.getElementById('save-resume-btn');
+            const updateResumeBtn = document.getElementById('update-resume-btn');
+            const authModal = document.getElementById('auth-modal');
+            const saveModal = document.getElementById('save-modal');
+            const confirmSaveBtn = document.getElementById('confirm-save-btn');
+            const resumeTitleInput = document.getElementById('resume-title');
+
+            // Save Resume Button Click
+            if (saveResumeBtn) {
+                saveResumeBtn.addEventListener('click', function() {
+                    {% if user and user.is_authenticated %}
+                        // User is logged in, show save modal
+                        saveModal.style.display = 'flex';
+                        resumeTitleInput.focus();
+                    {% else %}
+                        // User not logged in, show auth modal
+                        authModal.style.display = 'flex';
+                    {% endif %}
+                });
+            }
+
+            // Update Resume Button Click
+            if (updateResumeBtn) {
+                updateResumeBtn.addEventListener('click', function() {
+                    updateExistingResume();
+                });
+            }
+
+            // Confirm Save Button Click
+            if (confirmSaveBtn) {
+                confirmSaveBtn.addEventListener('click', function() {
+                    const title = resumeTitleInput.value.trim();
+                    if (!title) {
+                        alert('Please enter a title for your resume');
+                        return;
+                    }
+                    saveResumeToDatabase(title);
+                });
+            }
+
+            // Close modals
+            document.querySelectorAll('.auth-modal-close, .save-modal-close').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    authModal.style.display = 'none';
+                    saveModal.style.display = 'none';
+                });
+            });
+
+            // Close modals on outside click
+            window.addEventListener('click', function(e) {
+                if (e.target === authModal) {
+                    authModal.style.display = 'none';
+                }
+                if (e.target === saveModal) {
+                    saveModal.style.display = 'none';
+                }
+            });
+        });
+
+        function saveResumeToDatabase(title) {
+            showLoading();
+            
+            fetch('/save_resume', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: title
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('save-modal').style.display = 'none';
+                    showSuccessMessage(data.message);
+                    
+                    // Redirect to dashboard after a short delay
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 2000);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error saving resume');
+            })
+            .finally(() => {
+                hideLoading();
+            });
+        }
+
+        function updateExistingResume() {
+            showLoading();
+            
+            const editingResumeId = {{ editing_resume_id if editing_resume_id else 'null' }};
+            
+            fetch(`/update_resume/${editingResumeId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccessMessage(data.message);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating resume');
+            })
+            .finally(() => {
+                hideLoading();
+            });
+        }
     </script>
 </body>
 </html>

@@ -276,57 +276,38 @@ class ContentEnhancer:
 
     def enhance_summary(self, raw_summary: str, analysis: Dict = None) -> str:
         """
-        Transform raw summary into professional 2-3 sentence summary
+        Transform raw summary into professional format while preserving user's actual content
         
         Must be:
-        - 2-3 sentences
-        - Role-aware (software, data, business)
+        - Based on user's actual input
+        - Professional tone
         - Keyword-rich but natural
         - Recruiter-written quality
         """
         if not raw_summary or not raw_summary.strip():
             return ""
         
-        # Analyze the text
-        if self.nlp_engine:
-            analysis = self.nlp_engine.analyze_text(raw_summary)
-        else:
-            analysis = {"keywords": [], "tokens": []}
+        # Clean up the raw summary
+        cleaned_summary = raw_summary.strip()
         
-        # Detect role/domain
-        domain = self._detect_domain(raw_summary, analysis)
+        # Apply basic professional formatting
+        # Ensure proper capitalization
+        sentences = re.split(r'[.!?]+', cleaned_summary)
+        formatted_sentences = []
         
-        # Extract key information
-        skills = self._extract_key_skills(raw_summary, analysis)
-        years = self._extract_years_experience(raw_summary)
-        achievements = self._extract_key_achievements(raw_summary)
+        for sentence in sentences:
+            sentence = sentence.strip()
+            if sentence:
+                # Capitalize first letter
+                sentence = sentence[0].upper() + sentence[1:] if len(sentence) > 1 else sentence.upper()
+                # Ensure it ends with a period
+                if not sentence.endswith('.'):
+                    sentence += '.'
+                formatted_sentences.append(sentence)
         
-        # Generate professional summary
-        template = self.summary_templates.get(domain, self.summary_templates['software'])
+        result = ' '.join(formatted_sentences)
         
-        summary_parts = []
-        
-        # Intro sentence
-        intro = template['intro'].format(
-            years=years or "5+",
-            skills=", ".join(skills[:3]) if skills else "full-stack development"
-        )
-        summary_parts.append(intro)
-        
-        # Focus sentence (if we have achievements)
-        if achievements:
-            focus = template['focus'].format(
-                domain=domain.replace('_', ' '),
-                achievements=achievements[0] if achievements else "delivering high-quality solutions"
-            )
-            summary_parts.append(focus)
-        
-        # Goal sentence
-        summary_parts.append(template['goal'])
-        
-        result = " ".join(summary_parts)
-        
-        # Apply AI polishing if available
+        # Apply AI polishing if available to improve language while preserving content
         if self.openai_client and result:
             result = self.ai_polish(result, 'summary')
         

@@ -129,8 +129,8 @@ def generate_resume(data: Dict[str, Any], style: str = 'modern') -> str:
     except Exception as e:
         logger.error(f"Error building custom sections: {e}")
     
-    # Join all sections with proper ATS spacing (one blank line between sections)
-    complete_resume = '\n\n'.join(resume_sections)
+    # Join all sections with minimal spacing (single blank line between sections)
+    complete_resume = '\n'.join(resume_sections)
     
     # Ensure we never return empty content
     if not complete_resume.strip():
@@ -205,7 +205,7 @@ def _build_summary_section(data: Dict[str, Any], enhancer) -> str:
     section_parts = []
     section_parts.append('Professional Summary')
     section_parts.append(enhanced_summary)
-    section_parts.append('-' * 70)  # Professional horizontal line after content
+    section_parts.append('-' * 50)  # Shorter horizontal line
     
     return '\n'.join(section_parts)
 
@@ -241,7 +241,7 @@ def _build_skills_section(data: Dict[str, Any], enhancer) -> str:
         for skill in skill_list:
             section_parts.append(f'• {skill}')
     
-    section_parts.append('-' * 70)  # Professional horizontal line after content
+    section_parts.append('-' * 50)  # Shorter horizontal line
     
     return '\n'.join(section_parts)
 
@@ -265,7 +265,7 @@ def _build_education_section(data: Dict[str, Any], enhancer) -> str:
             section_parts = []
             section_parts.append('Education')
             section_parts.append(enhanced_education)
-            section_parts.append('-' * 70)  # Professional horizontal line after content
+            section_parts.append('-' * 50)  # Shorter horizontal line
             return '\n'.join(section_parts)
         return ""
     
@@ -330,7 +330,7 @@ def _build_education_section(data: Dict[str, Any], enhancer) -> str:
     
     # Add separator at end of section
     if len(section_parts) > 1:
-        section_parts.append('-' * 70)  # Professional horizontal line after content
+        section_parts.append('-' * 50)  # Shorter horizontal line
     
     return '\n'.join(section_parts) if len(section_parts) > 2 else ""
 
@@ -357,7 +357,7 @@ def _build_experience_section(data: Dict[str, Any], enhancer) -> str:
             section_parts = []
             section_parts.append('Experience')
             section_parts.append(enhanced_experience)
-            section_parts.append('-' * 70)  # Professional horizontal line after content
+            section_parts.append('-' * 50)  # Shorter horizontal line
             return '\n'.join(section_parts)
         return ""
     
@@ -459,7 +459,7 @@ def _build_experience_section(data: Dict[str, Any], enhancer) -> str:
     
     # Add separator at end of section
     if len(section_parts) > 1:
-        section_parts.append('-' * 70)  # Professional horizontal line after content
+        section_parts.append('-' * 50)  # Shorter horizontal line
     
     result = '\n'.join(section_parts) if len(section_parts) > 2 else ""
     logger.info(f"Experience section result length: {len(result)} characters")
@@ -488,7 +488,7 @@ def _build_projects_section(data: Dict[str, Any], enhancer) -> str:
             section_parts = []
             section_parts.append('Projects')
             section_parts.append(enhanced_projects)
-            section_parts.append('-' * 70)  # Professional horizontal line after content
+            section_parts.append('-' * 50)  # Shorter horizontal line
             return '\n'.join(section_parts)
         return ""
     
@@ -560,7 +560,7 @@ def _build_projects_section(data: Dict[str, Any], enhancer) -> str:
     
     # Add separator at end of section
     if len(section_parts) > 1:
-        section_parts.append('-' * 70)  # Professional horizontal line after content
+        section_parts.append('-' * 50)  # Shorter horizontal line
     
     result = '\n'.join(section_parts) if len(section_parts) > 2 else ""
     logger.info(f"Projects section result length: {len(result)} characters")
@@ -599,7 +599,7 @@ def _build_custom_sections(data: Dict[str, Any], enhancer) -> List[str]:
             # Professional format: Clean title with content and separator at end
             section_parts.append(title.title())  # Title case instead of uppercase
             section_parts.append(enhanced_content)
-            section_parts.append('-' * 70)  # Professional horizontal line after content
+            section_parts.append('-' * 50)  # Shorter horizontal line
             
             formatted_sections.append('\n'.join(section_parts))
     
@@ -633,30 +633,30 @@ def _create_fallback_resume(data: Dict[str, Any]) -> str:
     if data.get('objective'):
         fallback_parts.append("Professional Summary")
         fallback_parts.append(data['objective'])
-        fallback_parts.append("-" * 70)
+        fallback_parts.append("-" * 50)
         fallback_parts.append("")
     
     if data.get('skills'):
         fallback_parts.append("Skills")
         fallback_parts.append(data['skills'])
-        fallback_parts.append("-" * 70)
+        fallback_parts.append("-" * 50)
         fallback_parts.append("")
     
     if data.get('experience'):
         fallback_parts.append("Experience")
         fallback_parts.append(data['experience'])
-        fallback_parts.append("-" * 70)
+        fallback_parts.append("-" * 50)
         fallback_parts.append("")
     
     if data.get('education'):
         fallback_parts.append("Education")
         fallback_parts.append(data['education'])
-        fallback_parts.append("-" * 70)
+        fallback_parts.append("-" * 50)
         fallback_parts.append("")
     
     if data.get('projects'):
         fallback_parts.append("Projects")
         fallback_parts.append(data['projects'])
-        fallback_parts.append("-" * 70)
+        fallback_parts.append("-" * 50)
     
     return '\n'.join(fallback_parts)

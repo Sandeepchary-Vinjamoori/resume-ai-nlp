@@ -1,6 +1,11 @@
 from flask import Flask, render_template, request, send_file, jsonify, flash, session, redirect, url_for
+from flask_login import LoginManager, login_required, current_user
 from core.simple_builder import generate_resume
 from core.simple_exporter import export_to_docx, export_to_pdf
+from config import Config
+from models import db, User, Resume
+from auth import auth_bp
+from dashboard import dashboard_bp
 
 import os
 import uuid
@@ -10,18 +15,39 @@ from io import BytesIO
 import tempfile
 
 app = Flask(__name__)
-app.secret_key = 'resume_ai_secret_key_2024'  # For flash messages
+app.config.from_object(Config)
+
+# Initialize extensions
+db.init_app(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'auth.signin'
+login_manager.login_message = 'Please sign in to access this page.'
+login_manager.login_message_category = 'info'
+
+# Register blueprints
+app.register_blueprint(auth_bp, url_prefix='/auth')
+app.register_blueprint(dashboard_bp)
+
+@login_manager.user_loader
+def load_user(user_id):
+    # Handle UUID strings (from Supabase) - don't convert to int
+    return User.query.get(user_id)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-OUTPUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "generated")
+OUTPUT_DIR = app.config['OUTPUT_DIR']
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Supported styles and formats
-SUPPORTED_STYLES = ['simple', 'modern', 'academic']
-SUPPORTED_FORMATS = ['docx', 'pdf']
+SUPPORTED_STYLES = app.config['SUPPORTED_STYLES']
+SUPPORTED_FORMATS = app.config['SUPPORTED_FORMATS']
+
+# Create database tables
+with app.app_context():
+    db.create_all()
 
 
 @app.route("/")
@@ -55,10 +81,15 @@ def review():
     # Convert resume text to HTML for display
     resume_html = convert_resume_to_html(resume_text, style)
     
+    # Check if user is editing an existing resume
+    editing_resume_id = session.get('editing_resume_id')
+    
     return render_template('review.html', 
                          resume_text=resume_text,
                          resume_html=resume_html,
-                         style=style)
+                         style=style,
+                         user=current_user,
+                         editing_resume_id=editing_resume_id)
 
 
 @app.route("/update_resume", methods=["POST"])

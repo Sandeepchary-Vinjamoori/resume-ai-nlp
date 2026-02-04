@@ -180,8 +180,11 @@ def export_to_pdf(resume_text, filepath):
         from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
         from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
         from reportlab.lib.units import inch
-        from reportlab.lib.colors import darkblue, black
+        from reportlab.lib.colors import darkblue, black, Color
         from reportlab.lib.enums import TA_LEFT, TA_CENTER
+        
+        # Define the exact teal/green color from web display
+        teal_color = Color(45/255, 134/255, 89/255)  # #2d8659 converted to RGB
         
         logger.info(f"Creating PDF file: {filepath}")
         logger.info(f"Resume text length: {len(resume_text)} characters")
@@ -204,55 +207,67 @@ def export_to_pdf(resume_text, filepath):
         # Get styles
         styles = getSampleStyleSheet()
         
-        # Custom styles for better formatting
+        # Custom styles for better formatting - matching web display
         name_style = ParagraphStyle(
             'ResumeName',
             parent=styles['Normal'],
-            fontSize=13,  # 2pt increase from 11pt
-            spaceAfter=0,
+            fontSize=16,  # Match web display (16pt)
+            spaceAfter=4,
             spaceBefore=0,
             alignment=TA_CENTER,  # Centered
-            textColor=black,  # Black color
+            textColor=black,  # Black color like web display
             fontName='Helvetica-Bold'
         )
         
         contact_style = ParagraphStyle(
             'ContactInfo',
             parent=styles['Normal'],
-            fontSize=10,  # Keep original
-            spaceAfter=0,  # Keep original
+            fontSize=11,  # Match web display
+            spaceAfter=4,
             spaceBefore=0,
-            alignment=TA_LEFT,  # Keep original
+            alignment=TA_CENTER,  # Centered like web display
             textColor=black
         )
         
         header_style = ParagraphStyle(
             'SectionHeader',
-            parent=styles['Normal'],  # Use normal as base
-            fontSize=11,  # Keep original size
-            spaceAfter=0,   # Keep original spacing
-            spaceBefore=0,
-            textColor=darkblue,  # Dark blue color only
+            parent=styles['Normal'],
+            fontSize=12,  # Match web display (12pt)
+            spaceAfter=4,
+            spaceBefore=16,  # Match web display spacing
+            textColor=teal_color,  # Exact teal/green color like web display
             fontName='Helvetica-Bold'
         )
         
         body_style = ParagraphStyle(
             'BodyText',
             parent=styles['Normal'],
-            fontSize=10,
-            spaceAfter=4,
+            fontSize=11,  # Match web display (11pt)
+            spaceAfter=0,  # Tight spacing like web display
             spaceBefore=0,
-            leftIndent=0
+            leftIndent=0,
+            textColor=black
         )
         
         bullet_style = ParagraphStyle(
             'BulletText',
             parent=styles['Normal'],
-            fontSize=10,
-            spaceAfter=3,
+            fontSize=11,  # Match web display (11pt)
+            spaceAfter=0,  # Tight spacing like web display
             spaceBefore=0,
             leftIndent=20,
-            bulletIndent=10
+            bulletIndent=10,
+            textColor=black
+        )
+        
+        subsection_style = ParagraphStyle(
+            'SubsectionText',
+            parent=styles['Normal'],
+            fontSize=11,  # Match web display (11pt)
+            spaceAfter=0,
+            spaceBefore=3,  # Small spacing like web display
+            textColor=black,
+            fontName='Helvetica-Bold'  # Bold like web display
         )
         
         # Build content with proper page handling
@@ -267,28 +282,62 @@ def export_to_pdf(resume_text, filepath):
             
             if not line:
                 # Add small spacer for empty lines
-                story.append(Spacer(1, 3))
+                story.append(Spacer(1, 2))
                 continue
             
-            # Detect content type and apply appropriate style
-            if line.isupper() and len(line.split()) <= 8 and not line.startswith('•') and not line.startswith('='):
-                if '=' in line or '-' in line:
-                    continue  # Skip separator lines
+            # Skip dashed lines completely - they're just formatting artifacts
+            if line.startswith('-') and len(set(line)) <= 2:
+                continue
+            
+            # Detect section headers (should be teal/green with underline)
+            section_headers = [
+                'Professional Summary', 'Summary', 'Objective',
+                'Skills', 'Technical Skills', 'Core Competencies', 
+                'Education', 'Academic Background',
+                'Experience', 'Professional Experience', 'Work Experience',
+                'Projects', 'Key Projects', 'Notable Projects',
+                'Certifications', 'Certificates', 'Awards',
+                'Achievements', 'Accomplishments'
+            ]
+            
+            if any(header.lower() in line.lower() for header in section_headers) and len(line) < 50:
+                # Section header - add page break if needed for long sections
+                if current_section_lines > 25 and not is_first_section:
+                    story.append(PageBreak())
+                    current_section_lines = 0
                 
-                # Check if this is the name (first line, not a section header)
-                if i == 0 or (i == 1 and lines[0].startswith('=')):
+                # Create section header with simple underline (not a box)
+                from reportlab.platypus import Table, TableStyle
+                from reportlab.lib import colors
+                
+                # Create a simple paragraph with underline effect
+                story.append(Paragraph(line, header_style))
+                
+                # Add a thin line underneath using a table
+                line_table = Table([[''], ['']], colWidths=[6*inch], rowHeights=[0.01*inch, 0.05*inch])
+                line_table.setStyle(TableStyle([
+                    ('LINEBELOW', (0, 0), (0, 0), 1, teal_color),
+                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ]))
+                story.append(line_table)
+                current_section_lines = 0
+                is_first_section = False
+                
+            elif i == 0 or (line and not any(char in line for char in ['|', '@', 'http']) and len(line.split()) <= 4):
+                # Name (first line or short line without contact info)
+                if i == 0:
                     story.append(Paragraph(line, name_style))
                     current_section_lines = 0
                 else:
-                    # Section header - add page break if needed for long sections
-                    if current_section_lines > 25 and not is_first_section:
-                        story.append(PageBreak())
-                        current_section_lines = 0
+                    # Could be a subsection header
+                    story.append(Paragraph(line, subsection_style))
+                    current_section_lines += 1
                     
-                    story.append(Paragraph(line, header_style))
-                    current_section_lines = 0
-                    is_first_section = False
-                    
+            elif '|' in line and any(word in line.lower() for word in ['email', 'phone', 'linkedin', 'location', '@', 'http']):
+                # Contact information
+                story.append(Paragraph(line, contact_style))
+                current_section_lines += 1
+                
             elif line.startswith('•') or line.startswith('-') or line.startswith('▸'):
                 # Bullet point
                 bullet_text = line[1:].strip() if line.startswith(('•', '-', '▸')) else line
@@ -307,25 +356,18 @@ def export_to_pdf(resume_text, filepath):
                 story.append(Paragraph(f"• {sub_bullet_text}", sub_bullet_style))
                 current_section_lines += 1
                 
-            elif ':' in line and len(line) < 100 and ('Email:' in line or 'Phone:' in line or 'LinkedIn:' in line or 'Location:' in line):
-                # Contact information
-                story.append(Paragraph(line, contact_style))
-                current_section_lines += 1
-                
             else:
-                # Regular text
-                # Handle long paragraphs by splitting them
-                if len(line) > 500:
-                    # Split long text into smaller chunks
-                    words = line.split()
-                    chunk_size = 100  # words per chunk
-                    for j in range(0, len(words), chunk_size):
-                        chunk = ' '.join(words[j:j+chunk_size])
-                        story.append(Paragraph(chunk, body_style))
-                        current_section_lines += 1
+                # Check if it's a subsection header (job titles, education entries, etc.)
+                if (len(line) < 100 and 
+                    (any(word in line.lower() for word in ['university', 'college', 'bachelor', 'master', 'intern', 'engineer', 'developer', 'manager', 'graduated']) or
+                     (',' in line and len(line.split(',')) == 2) or  # Job title, Company format
+                     (len(line.split()) <= 10 and not line.startswith('•') and not line.startswith('-') and ':' not in line))):
+                    # Likely a subsection header
+                    story.append(Paragraph(line, subsection_style))
                 else:
+                    # Regular text
                     story.append(Paragraph(line, body_style))
-                    current_section_lines += 1
+                current_section_lines += 1
         
         # Build the PDF with automatic page breaks
         logger.info(f"Building PDF with {len(story)} elements")

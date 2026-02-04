@@ -130,6 +130,39 @@
             box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
         }
 
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .auth-link {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .auth-link:hover {
+            color: #6366f1;
+        }
+
+        .auth-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            transition: width 0.3s ease;
+        }
+
+        .auth-link:hover::after {
+            width: 100%;
+        }
+
         /* Hero Section */
         .hero {
             background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
@@ -608,7 +641,10 @@
                     <a href="#how-it-works" class="nav-link">How it Works</a>
                     <a href="#features" class="nav-link">Features</a>
                     <a href="#benefits" class="nav-link">Benefits</a>
-                    <a href="/form" class="nav-cta">Get Started</a>
+                    <div class="auth-buttons">
+                        <a href="/auth/signin" class="auth-link">Sign In</a>
+                        <a href="/auth/signup" class="nav-cta">Sign Up</a>
+                    </div>
                 </nav>
             </div>
         </div>
@@ -627,7 +663,7 @@
                 Our NLP-powered system transforms your answers into a clean, recruiter-ready resume—no writing skills needed.
             </p>
             <a href="/form" class="cta-button">
-                Prepare Your Resume →
+                Start Building Your Resume →
             </a>
             <div class="hero-features">
                 <span>Free to use</span>
