@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Resume - {{ resume_title }} - Resume AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .edit-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+        }
+        
+        .edit-display {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 40px;
+            min-height: 800px;
+            position: relative;
+        }
+        
+        .edit-textarea {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Times New Roman', serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            resize: vertical;
+            background: #fafafa;
+        }
+        
+        .edit-textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            background: white;
+        }
+        
+        .control-panel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 24px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .control-panel h3 {
+            margin: 0 0 20px 0;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .style-selector {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 8px;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+            transform: translateY(-1px);
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            z-index: 1001;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .edit-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .control-panel {
+                position: static;
+                order: -1;
+            }
+            
+            .edit-display {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="edit-container">
+        <div class="edit-display">
+            <h2>Edit Resume: {{ resume_title }}</h2>
+            <textarea id="edit-textarea" class="edit-textarea">{{ resume_text|e }}</textarea>
+        </div>
+        
+        <div class="control-panel">
+            <h3>Resume Controls</h3>
+            
+            <div class="control-group">
+                <label for="style-selector">Resume Style:</label>
+                <select id="style-selector" class="style-selector">
+                    <option value="simple" {{ 'selected' if style == 'simple' else '' }}>Simple</option>
+                    <option value="modern" {{ 'selected' if style == 'modern' else '' }}>Modern</option>
+                    <option value="academic" {{ 'selected' if style == 'academic' else '' }}>Academic</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <button id="save-changes-btn" class="btn btn-success">💾 Save Changes</button>
+                <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-secondary">❌ Cancel</a>
+            </div>
+            
+            <div class="control-group">
+                <button id="download-pdf" class="btn btn-primary">📄 Download PDF</button>
+                <button id="download-docx" class="btn btn-primary">📝 Download DOCX</button>
+            </div>
+            
+            <div class="control-group">
+                <a href="{{ url_for('review') }}" class="btn btn-secondary">👁️ Preview</a>
+            </div>
+        </div>
+    </div>
+    
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Processing your request...</p>
+        </div>
+    </div>
+
+    <script>
+        let originalContent = '';
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            originalContent = document.getElementById('edit-textarea').value;
+            setupEventListeners();
+            console.log('Edit page loaded, content length:', originalContent.length);
+        });
+        
+        function setupEventListeners() {
+            // Save changes button
+            document.getElementById('save-changes-btn').addEventListener('click', saveChanges);
+            
+            // Style change
+            document.getElementById('style-selector').addEventListener('change', changeStyle);
+            
+            // Download buttons
+            document.getElementById('download-pdf').addEventListener('click', () => downloadResume('pdf'));
+            document.getElementById('download-docx').addEventListener('click', () => downloadResume('docx'));
+        }
+        
+        function saveChanges() {
+            const editTextarea = document.getElementById('edit-textarea');
+            const updatedContent = editTextarea.value;
+            const style = document.getElementById('style-selector').value;
+            
+            if (!updatedContent.trim()) {
+                alert('Resume content cannot be empty.');
+                return;
+            }
+            
+            console.log('Saving changes, content length:', updatedContent.length);
+            showLoading();
+            
+            // Save directly to database
+            fetch('/update_resume/{{ editing_resume_id }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    resume_text: updatedContent,
+                    style: style
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    originalContent = updatedContent;
+                    showSuccessMessage('Resume updated successfully!');
+                    console.log('Resume saved successfully');
+                } else {
+                    alert('Error saving resume: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error saving resume: ' + error.message);
+            })
+            .finally(() => {
+                hideLoading();
+            });
+        }
+        
+        function changeStyle() {
+            const newStyle = document.getElementById('style-selector').value;
+            const resumeText = document.getElementById('edit-textarea').value;
+            
+            console.log('Changing style to:', newStyle);
+            showLoading();
+            
+            fetch('/change_style', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    resume_text: resumeText,
+                    style: newStyle
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Style changed successfully');
+                } else {
+                    alert('Error changing style: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error changing style');
+            })
+            .finally(() => {
+                hideLoading();
+            });
+        }
+        
+        function downloadResume(format) {
+            const editTextarea = document.getElementById('edit-textarea');
+            const resumeText = editTextarea.value;
+            const style = document.getElementById('style-selector').value;
+            
+            if (!resumeText.trim()) {
+                alert('Resume content is empty. Cannot download.');
+                return;
+            }
+            
+            console.log(`Downloading resume as ${format}`);
+            showLoading();
+            
+            fetch('/download_resume', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    resume_text: resumeText,
+                    style: style,
+                    format: format
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.blob();
+                }
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Download failed');
+                });
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `resume.${format}`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                showSuccessMessage(`Resume downloaded as ${format.toUpperCase()}`);
+                console.log(`Downloaded resume as ${format}`);
+            })
+            .catch(error => {
+                console.error('Download error:', error);
+                alert('Error downloading resume: ' + error.message);
+            })
+            .finally(() => {
+                hideLoading();
+            });
+        }
+        
+        function showLoading() {
+            document.getElementById('loading-overlay').style.display = 'flex';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading-overlay').style.display = 'none';
+        }
+        
+        function showSuccessMessage(message) {
+            const successMsg = document.createElement('div');
+            successMsg.className = 'success-message';
+            successMsg.textContent = message;
+            document.body.appendChild(successMsg);
+            setTimeout(() => {
+                if (document.body.contains(successMsg)) {
+                    document.body.removeChild(successMsg);
+                }
+            }, 3000);
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 's') {
+                    e.preventDefault();
+                    saveChanges();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

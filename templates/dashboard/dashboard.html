@@ -13,71 +13,96 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f8fafc;
+            background: #ffffff;
+            min-height: 100vh;
             color: #1a202c;
             line-height: 1.6;
         }
 
-        /* Header */
+        /* Premium Header */
         .header {
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+            padding: 20px 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.08);
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 18px;
-            font-weight: 600;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
             color: #1a202c;
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: translateY(-2px);
         }
 
         .logo-icon {
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 16px;
+            font-size: 18px;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            border: 1px solid rgba(102, 126, 234, 0.2);
         }
 
         .logo-text {
-            color: #4a5568;
-            font-size: 14px;
+            color: #64748b;
+            font-size: 12px;
             font-weight: 400;
             margin-left: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .user-menu {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
         }
 
         .user-name {
-            font-weight: 500;
-            color: #2d3748;
+            font-weight: 600;
+            color: #1a202c;
+            font-size: 16px;
         }
 
         .user-avatar {
-            width: 32px;
-            height: 32px;
-            background: #e2e8f0;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            backdrop-filter: blur(10px);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #4a5568;
-            font-weight: 500;
+            color: white;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .user-avatar:hover {
+            background: linear-gradient(135deg, #5855eb, #7c3aed);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
 
         .dropdown {
@@ -89,76 +114,117 @@
             display: none;
             position: absolute;
             right: 0;
-            background: white;
-            min-width: 160px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            z-index: 1;
-            border: 1px solid #e2e8f0;
+            top: 50px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            min-width: 180px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            z-index: 1000;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-content.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .dropdown-content a {
             color: #4a5568;
-            padding: 12px 16px;
+            padding: 16px 20px;
             text-decoration: none;
             display: block;
             font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
 
         .dropdown-content a:hover {
-            background: #f7fafc;
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
         }
 
         /* Main Content */
         .main-content {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 24px;
+            padding: 40px 32px;
         }
 
+        /* Welcome Section */
         .welcome-section {
+            background: rgba(102, 126, 234, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            border-radius: 24px;
+            padding: 40px;
             margin-bottom: 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.05), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .welcome-section:hover::before {
+            left: 100%;
         }
 
         .welcome-title {
-            font-size: 32px;
-            font-weight: 600;
+            font-size: 36px;
+            font-weight: 700;
             color: #1a202c;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            gap: 12px;
         }
 
         .welcome-subtitle {
-            color: #718096;
-            font-size: 16px;
-            margin-bottom: 24px;
+            color: #64748b;
+            font-size: 18px;
+            margin-bottom: 32px;
         }
 
         .create-btn {
             background: linear-gradient(135deg, #667eea, #764ba2);
+            backdrop-filter: blur(10px);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
 
         .create-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #5855eb, #7c3aed);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
         }
 
         /* Resumes Section */
@@ -167,50 +233,74 @@
         }
 
         .section-title {
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 28px;
+            font-weight: 700;
             color: #1a202c;
-            margin-bottom: 24px;
+            margin-bottom: 32px;
+            text-align: center;
         }
 
         .resumes-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 32px;
         }
 
         .resume-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 20px;
-            transition: all 0.2s;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            border-radius: 20px;
+            padding: 32px;
+            transition: all 0.4s ease;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.08);
+        }
+
+        .resume-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.05), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .resume-card:hover::before {
+            left: 100%;
         }
 
         .resume-card:hover {
-            border-color: #cbd5e0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15);
+            border: 1px solid rgba(102, 126, 234, 0.2);
         }
 
         .resume-header {
             display: flex;
             align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 16px;
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
         .resume-icon {
-            width: 40px;
-            height: 40px;
-            background: #edf2f7;
-            border-radius: 8px;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #4a5568;
-            font-size: 18px;
+            color: white;
+            font-size: 20px;
             flex-shrink: 0;
+            border: 1px solid rgba(102, 126, 234, 0.2);
         }
 
         .resume-info {
@@ -218,106 +308,94 @@
         }
 
         .resume-title {
-            font-size: 16px;
+            font-size: 20px;
             font-weight: 600;
             color: #1a202c;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .resume-date {
             font-size: 14px;
-            color: #718096;
+            color: #64748b;
         }
 
         .resume-actions {
             display: flex;
-            gap: 8px;
-            margin-top: 16px;
+            gap: 12px;
+            margin-top: 24px;
         }
 
         .action-btn {
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 8px 12px;
-            border: 1px solid #e2e8f0;
-            background: white;
-            color: #4a5568;
+            gap: 8px;
+            padding: 12px 16px;
+            background: rgba(102, 126, 234, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            color: #667eea;
             text-decoration: none;
-            border-radius: 6px;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: 500;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
             cursor: pointer;
+            flex: 1;
+            justify-content: center;
         }
 
         .action-btn:hover {
-            background: #f7fafc;
-            border-color: #cbd5e0;
+            background: rgba(102, 126, 234, 0.15);
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+            color: #5855eb;
         }
 
         .action-btn.delete {
-            color: #e53e3e;
-            border-color: #fed7d7;
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.2);
         }
 
         .action-btn.delete:hover {
-            background: #fed7d7;
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #dc2626;
         }
 
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            color: #718096;
+            padding: 80px 20px;
+            background: rgba(102, 126, 234, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            border-radius: 20px;
+            margin-top: 32px;
         }
 
         .empty-state-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.5;
+            font-size: 64px;
+            margin-bottom: 24px;
+            opacity: 0.4;
         }
 
         .empty-state h3 {
-            font-size: 18px;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: #4a5568;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1a202c;
         }
 
         .empty-state p {
-            margin-bottom: 24px;
+            margin-bottom: 32px;
+            color: #64748b;
+            font-size: 16px;
         }
 
-        /* Flash Messages */
+        /* Flash Messages - Hide them */
         .flash-messages {
-            margin-bottom: 24px;
-        }
-
-        .flash-message {
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .flash-message.success {
-            background: #f0fff4;
-            color: #22543d;
-            border: 1px solid #c6f6d5;
-        }
-
-        .flash-message.error {
-            background: #fed7d7;
-            color: #742a2a;
-            border: 1px solid #feb2b2;
-        }
-
-        .flash-message.info {
-            background: #ebf8ff;
-            color: #2a4365;
-            border: 1px solid #bee3f8;
+            display: none;
         }
 
         /* Responsive */
@@ -327,15 +405,32 @@
             }
 
             .welcome-title {
-                font-size: 24px;
+                font-size: 28px;
+            }
+
+            .welcome-section {
+                padding: 32px 24px;
             }
 
             .resumes-grid {
                 grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .resume-card {
+                padding: 24px;
             }
 
             .header {
-                padding: 12px 16px;
+                padding: 16px 20px;
+            }
+
+            .resume-actions {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                flex: none;
             }
         }
     </style>
@@ -347,16 +442,16 @@
             <div class="logo-icon">📄</div>
             <div>
                 <div>ResumeAI</div>
-                <div class="logo-text">DASHBOARD</div>
+                <div class="logo-text">Dashboard</div>
             </div>
         </div>
         <div class="user-menu">
             <span class="user-name">{{ user.name }}</span>
             <div class="dropdown">
-                <div class="user-avatar">{{ user.name[0].upper() }}</div>
-                <div class="dropdown-content">
-                    <a href="{{ url_for('auth.profile') }}">Profile</a>
-                    <a href="{{ url_for('auth.logout') }}">Sign Out</a>
+                <div class="user-avatar" id="dropdownToggle">{{ user.name[0].upper() }}</div>
+                <div class="dropdown-content" id="dropdownContent">
+                    <a href="{{ url_for('auth.profile') }}">👤 Profile</a>
+                    <a href="{{ url_for('auth.logout') }}">🚪 Sign Out</a>
                 </div>
             </div>
         </div>
@@ -364,7 +459,7 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Flash Messages -->
+        <!-- Flash Messages (Hidden) -->
         <div class="flash-messages">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -400,14 +495,14 @@
                             </div>
                         </div>
                         <div class="resume-actions">
-                            <a href="{{ url_for('dashboard.load_resume', resume_id=resume.id) }}" class="action-btn">
+                            <a href="{{ url_for('edit_resume', resume_id=resume.id) }}" class="action-btn">
                                 ✏️ Edit
                             </a>
-                            <a href="#" onclick="downloadResume('{{ resume.id }}')" class="action-btn">
+                            <a href="{{ url_for('download_resume_file', resume_id=resume.id) }}" class="action-btn">
                                 ⬇️ Download
                             </a>
-                            <button onclick="deleteResume({{ resume.id }}, '{{ resume.title }}')" class="action-btn delete">
-                                🗑️
+                            <button onclick="deleteResume('{{ resume.id }}', '{{ resume.title }}')" class="action-btn delete">
+                                🗑️ Delete
                             </button>
                         </div>
                     </div>
@@ -427,6 +522,37 @@
     </div>
 
     <script>
+        // Dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownToggle = document.getElementById('dropdownToggle');
+            const dropdownContent = document.getElementById('dropdownContent');
+
+            // Toggle dropdown on click
+            dropdownToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownContent.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!dropdownToggle.contains(e.target) && !dropdownContent.contains(e.target)) {
+                    dropdownContent.classList.remove('show');
+                }
+            });
+
+            // Keep dropdown open when hovering over it
+            dropdownContent.addEventListener('mouseenter', function() {
+                dropdownContent.classList.add('show');
+            });
+
+            // Optional: Close dropdown when clicking on a link
+            dropdownContent.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    dropdownContent.classList.remove('show');
+                }
+            });
+        });
+
         function deleteResume(resumeId, title) {
             if (confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) {
                 fetch(`/delete_resume/${resumeId}`, {
@@ -447,11 +573,6 @@
                     alert('Error deleting resume');
                 });
             }
-        }
-
-        function downloadResume(resumeId) {
-            // This will be implemented when we add download functionality
-            alert('Download functionality will be added soon!');
         }
     </script>
 </body>

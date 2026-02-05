@@ -428,6 +428,47 @@
             originalContent = document.getElementById('edit-textarea').value;
             applyMinimalStyling();
             console.log('Page loaded, original content length:', originalContent.length);
+            
+            // Auto-enter edit mode if we're editing an existing resume
+            const editingResumeId = '{{ editing_resume_id }}';
+            const urlParams = new URLSearchParams(window.location.search);
+            const editParam = urlParams.get('edit');
+            
+            console.log('Editing resume ID:', editingResumeId);
+            console.log('Edit URL parameter:', editParam);
+            
+            // Simple approach: if edit parameter exists, click the edit button
+            if (editParam === '1') {
+                console.log('Edit parameter found, clicking edit button');
+                setTimeout(() => {
+                    const editButton = document.getElementById('edit-btn');
+                    if (editButton) {
+                        console.log('Clicking edit button...');
+                        editButton.click();
+                    } else {
+                        console.log('Edit button not found');
+                    }
+                }, 1000); // Longer delay to ensure everything is loaded
+            }
+            
+            {% if editing_resume_id %}
+                console.log('Auto-entering edit mode for resume ID: {{ editing_resume_id }}');
+                setTimeout(() => {
+                    console.log('Triggering enterEditMode...');
+                    enterEditMode();
+                }, 500); // Small delay to ensure page is fully loaded
+            {% else %}
+                console.log('No editing_resume_id found, checking URL parameter');
+                if (editParam === '1') {
+                    console.log('Edit parameter found, entering edit mode');
+                    setTimeout(() => {
+                        console.log('Triggering enterEditMode via URL parameter...');
+                        enterEditMode();
+                    }, 500);
+                } else {
+                    console.log('Staying in view mode');
+                }
+            {% endif %}
         });
         
         function applyMinimalStyling() {
@@ -513,7 +554,7 @@
         }
         
         function enterEditMode() {
-            console.log('Entering edit mode');
+            console.log('enterEditMode() called');
             isEditing = true;
             
             const resumeContent = document.getElementById('resume-content');
@@ -521,6 +562,14 @@
             const editBtn = document.getElementById('edit-btn');
             const saveBtn = document.getElementById('save-btn');
             const cancelBtn = document.getElementById('cancel-btn');
+            
+            console.log('Elements found:', {
+                resumeContent: !!resumeContent,
+                editTextarea: !!editTextarea,
+                editBtn: !!editBtn,
+                saveBtn: !!saveBtn,
+                cancelBtn: !!cancelBtn
+            });
             
             // Hide resume content and show textarea
             resumeContent.style.display = 'none';
@@ -534,7 +583,7 @@
             // Focus on textarea
             editTextarea.focus();
             
-            console.log('Edit mode activated');
+            console.log('Edit mode activated successfully');
         }
         
         function exitEditMode() {

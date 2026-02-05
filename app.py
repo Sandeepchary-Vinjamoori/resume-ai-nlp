@@ -219,6 +219,228 @@ def regenerate_resume():
         return jsonify({'success': False, 'error': str(e)})
 
 
+@app.route("/save_resume", methods=["POST"])
+@login_required
+def save_resume():
+    """Save current resume from session to database"""
+    try:
+        # Get resume data from session
+        if 'resume_data' not in session:
+            return jsonify({'success': False, 'error': 'No resume data found'})
+        
+        resume_data = session['resume_data']
+        title = request.json.get('title', '').strip()
+        
+        if not title:
+            return jsonify({'success': False, 'error': 'Resume title is required'})
+        
+        # Check if we're updating an existing resume
+        editing_resume_id = session.get('editing_resume_id')
+        
+        if editing_resume_id:
+            # Update existing resume
+            resume = Resume.query.filter_by(id=editing_resume_id, user_id=current_user.id).first()
+            if not resume:
+                return jsonify({'success': False, 'error': 'Resume not found'})
+            
+            resume.content = resume_data['resume_text']
+            resume.style = resume_data['style']
+            resume.set_form_data(resume_data['form_data'])
+            resume.updated_at = datetime.utcnow()
+            
+            # Clear editing session
+            session.pop('editing_resume_id', None)
+            
+            db.session.commit()
+            
+            return jsonify({
+                'success': True, 
+                'message': f'Resume "{resume.title}" updated successfully!',
+                'resume_id': resume.id
+            })
+        else:
+            # Check if title already exists for this user
+            existing = Resume.query.filter_by(user_id=current_user.id, title=title).first()
+            if existing:
+                return jsonify({'success': False, 'error': 'A resume with this title already exists'})
+            
+            # Create new resume
+            resume = Resume(
+                user_id=current_user.id,
+                title=title,
+                content=resume_data['resume_text'],
+                style=resume_data['style']
+            )
+            resume.set_form_data(resume_data['form_data'])
+            
+            db.session.add(resume)
+            db.session.commit()
+            
+            return jsonify({
+                'success': True, 
+                'message': f'Resume "{title}" saved successfully!',
+                'resume_id': resume.id
+            })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': 'Failed to save resume'})
+
+
+@app.route("/edit_resume/<resume_id>")
+@login_required
+def edit_resume(resume_id):
+    """Edit an existing resume - show edit interface directly"""
+    try:
+        # Get resume (ensure it belongs to current user)
+        resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
+        
+        if not resume:
+            flash('Resume not found', 'error')
+            return redirect(url_for('dashboard.dashboard'))
+        
+        # Load resume data into session
+        session['resume_data'] = {
+            'resume_text': resume.content,
+            'style': resume.style,
+            'form_data': resume.get_form_data()
+        }
+        
+        # Store resume ID for updating
+        session['editing_resume_id'] = resume_id
+        
+        # Render the edit template directly (same as review but starts in edit mode)
+        return render_template('edit_resume.html', 
+                             resume_text=resume.content,
+                             resume_html=convert_resume_to_html(resume.content, resume.style),
+                             style=resume.style,
+                             user=current_user,
+                             editing_resume_id=resume_id,
+                             resume_title=resume.title)
+        
+    except Exception as e:
+        flash('Error loading resume for editing', 'error')
+        return redirect(url_for('dashboard.dashboard'))
+
+
+@app.route("/download_resume_file/<resume_id>")
+@login_required
+def download_resume_file(resume_id):
+    """Download a saved resume file"""
+    try:
+        # Get resume (ensure it belongs to current user)
+        resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
+        
+        if not resume:
+            flash('Resume not found', 'error')
+            return redirect(url_for('dashboard.dashboard'))
+        
+        # Create temporary file
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"resume_{resume.style}_{timestamp}.docx"
+        filepath = os.path.join(OUTPUT_DIR, filename)
+        
+        # Export to DOCX
+        export_to_docx(resume.content, filepath)
+        
+        # Get clean name for download
+        form_data = resume.get_form_data()
+        name = form_data.get('name', resume.title)
+        clean_name = name.replace(' ', '_').replace('.', '')
+        download_name = f"{clean_name}_Resume.docx"
+        
+        return send_file(
+            filepath,
+            as_attachment=True,
+            mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            download_name=download_name
+        )
+        
+    except Exception as e:
+        logger.error(f"Error downloading resume: {str(e)}")
+        flash('Error downloading resume', 'error')
+        return redirect(url_for('dashboard.dashboard'))
+
+
+@app.route("/delete_resume/<resume_id>", methods=["POST"])
+@login_required
+def delete_resume(resume_id):
+    """Delete a resume"""
+    try:
+        # Get resume (ensure it belongs to current user)
+        resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
+        
+        if not resume:
+            return jsonify({'success': False, 'error': 'Resume not found'})
+        
+        title = resume.title
+        db.session.delete(resume)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True, 
+            'message': f'Resume "{title}" deleted successfully'
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': 'Failed to delete resume'})
+
+
+@app.route("/update_resume/<resume_id>", methods=["POST"])
+@login_required
+def update_existing_resume(resume_id):
+    """Update an existing resume from the edit page"""
+    try:
+        # Get resume (ensure it belongs to current user)
+        resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
+        
+        if not resume:
+            return jsonify({'success': False, 'error': 'Resume not found'})
+        
+        # Get updated data from request or session
+        data = request.get_json()
+        if data and 'resume_text' in data:
+            # Direct update from edit page
+            resume_text = data.get('resume_text', '')
+            style = data.get('style', resume.style)
+            
+            if not resume_text.strip():
+                return jsonify({'success': False, 'error': 'Resume content cannot be empty'})
+            
+            # Update resume
+            resume.content = resume_text
+            resume.style = style
+            resume.updated_at = datetime.utcnow()
+            
+            # Also update session if it exists
+            if 'resume_data' in session:
+                session['resume_data']['resume_text'] = resume_text
+                session['resume_data']['style'] = style
+        else:
+            # Update from session (for review page compatibility)
+            if 'resume_data' not in session:
+                return jsonify({'success': False, 'error': 'No resume data found'})
+            
+            resume_data = session['resume_data']
+            resume.content = resume_data['resume_text']
+            resume.style = resume_data['style']
+            resume.set_form_data(resume_data['form_data'])
+            resume.updated_at = datetime.utcnow()
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True, 
+            'message': f'Resume "{resume.title}" updated successfully!'
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error updating resume: {str(e)}")
+        return jsonify({'success': False, 'error': 'Failed to update resume'})
+
+
 def convert_resume_to_html(resume_text, style):
     """Convert plain text resume to HTML for display"""
     if not resume_text:
