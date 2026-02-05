@@ -57,3 +57,6 @@ models/
 
 # Test files
 test_output/
+test_*.py
+*_test.py
+tests/
