@@ -10,12 +10,19 @@ from dashboard import dashboard_bp
 import os
 import uuid
 import logging
+import re
 from datetime import datetime
 from io import BytesIO
 import tempfile
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+# Add custom Jinja2 filter for regex
+@app.template_filter('regex_search')
+def regex_search(text, pattern):
+    """Custom Jinja2 filter for regex search"""
+    return bool(re.search(pattern, text))
 
 # Initialize extensions
 db.init_app(app)
@@ -78,15 +85,11 @@ def review():
     resume_text = resume_data['resume_text']
     style = resume_data['style']
     
-    # Convert resume text to HTML for display
-    resume_html = convert_resume_to_html(resume_text, style)
-    
     # Check if user is editing an existing resume
     editing_resume_id = session.get('editing_resume_id')
     
-    return render_template('review.html', 
+    return render_template('review_simple.html', 
                          resume_text=resume_text,
-                         resume_html=resume_html,
                          style=style,
                          user=current_user,
                          editing_resume_id=editing_resume_id)
@@ -168,11 +171,30 @@ def download_resume():
         
         # Export to selected format
         if format_type == "pdf":
-            export_to_pdf(resume_text, filepath)
+            # Use NUCLEAR LEFT ALIGNMENT PDF export
+            try:
+                from core.simple_pdf import create_simple_pdf
+                logger.info("🎯 Using NUCLEAR LEFT ALIGNMENT PDF export")
+                success = create_simple_pdf(resume_text, filepath)
+                
+                if not success:
+                    # Final fallback to original PDF export
+                    logger.warning("Nuclear PDF failed, using original export")
+                    export_to_pdf(resume_text, filepath)
+                else:
+                    logger.info("✅ Nuclear PDF created successfully - FORCED LEFT ALIGNMENT")
+                    
+            except Exception as e:
+                logger.error(f"Nuclear PDF failed: {e}, using fallback")
+                export_to_pdf(resume_text, filepath)
             mime_type = "application/pdf"
         else:
             export_to_docx(resume_text, filepath)
             mime_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        
+        # Verify file exists
+        if not os.path.exists(filepath) or os.path.getsize(filepath) == 0:
+            return jsonify({'success': False, 'error': 'File generation failed'})
         
         # Get clean name for download
         form_data = session.get('resume_data', {}).get('form_data', {})
@@ -189,7 +211,7 @@ def download_resume():
         
     except Exception as e:
         logger.error(f"Error downloading resume: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)})
+        return jsonify({'success': False, 'error': f'Download failed: {str(e)}'})
 
 
 @app.route("/regenerate_resume", methods=["POST"])
@@ -442,73 +464,44 @@ def update_existing_resume(resume_id):
 
 
 def convert_resume_to_html(resume_text, style):
-    """Convert plain text resume to HTML for display"""
+    """Convert plain text resume to HTML for display - matches review template CSS classes"""
     if not resume_text:
         return ""
     
     lines = resume_text.split('\n')
     html_parts = []
-    current_section = None
     
-    for line in lines:
-        line = line.strip()
-        if not line:
+    for i, line in enumerate(lines):
+        original_line = line
+        trimmed = line.strip()
+        
+        if not trimmed:
+            html_parts.append('<br>')
             continue
         
-        # Check if it's a section header (all caps or specific patterns)
-        if (line.isupper() and len(line) > 2 and len(line) < 50) or \
-           line in ['CONTACT INFORMATION', 'PROFESSIONAL SUMMARY', 'EDUCATION', 
-                   'WORK EXPERIENCE', 'PROJECTS', 'SKILLS', 'CERTIFICATIONS']:
-            current_section = line
-            html_parts.append(f'<div class="resume-section">')
-            html_parts.append(f'<h2 class="resume-section-title">{line}</h2>')
+        # Name - first line (same logic as template)
+        if i == 0 and '|' not in trimmed and '@' not in trimmed:
+            html_parts.append(f'<div class="name">{original_line}</div>')
+        # Contact info (same logic as template)
+        elif '|' in trimmed or '@' in trimmed or (len(trimmed) > 8 and re.search(r'\d{10}', trimmed)):
+            html_parts.append(f'<div class="contact">{original_line}</div>')
+        # Section headers (same logic as template)
+        elif (trimmed.upper() in ['PROFESSIONAL SUMMARY', 'SUMMARY', 'SKILLS', 'EDUCATION', 'EXPERIENCE', 'PROJECTS', 'CERTIFICATIONS'] or
+              'SUMMARY' in trimmed.upper() or 'EDUCATION' in trimmed.upper() or 
+              'EXPERIENCE' in trimmed.upper() or 'PROJECTS' in trimmed.upper() or 
+              'SKILLS' in trimmed.upper()):
+            html_parts.append(f'<div class="section">{original_line}</div>')
+        # Skip horizontal lines
+        elif trimmed.startswith('-') and trimmed.replace('-', '').strip() == '':
             continue
-        
-        # Skip separator lines
-        if line.startswith('---') or line.startswith('===') or line.startswith('___'):
-            continue
-        
-        # Handle different content types
-        if line.startswith('•') or line.startswith('-') or line.startswith('▸'):
-            html_parts.append(f'<div class="resume-bullet">{line}</div>')
-        elif current_section == 'CONTACT INFORMATION' or current_section == 'CONTACT':
-            html_parts.append(f'<div class="resume-contact">{line}</div>')
-        elif '|' in line and current_section in ['EDUCATION', 'WORK EXPERIENCE', 'EXPERIENCE']:
-            # Handle formatted entries like "Job Title | Company | Date"
-            html_parts.append(f'<div class="resume-item-header">{line}</div>')
+        # Bullet points (same logic as template)
+        elif trimmed.startswith('•') or trimmed.startswith('-') or trimmed.startswith('*'):
+            html_parts.append(f'<div class="bullet">{original_line}</div>')
         else:
-            # Regular content
-            if len(line) > 100:  # Longer text, probably description
-                html_parts.append(f'<div class="resume-item-content">{line}</div>')
-            else:  # Shorter text, probably header or subheader
-                html_parts.append(f'<div class="resume-item-subheader">{line}</div>')
+            # All other content (same logic as template) - ensure left alignment
+            html_parts.append(f'<div class="content">{original_line}</div>')
     
-    # Close any open section
-    if current_section:
-        html_parts.append('</div>')
-    
-    # Wrap in header if we have contact info
-    html_content = '\n'.join(html_parts)
-    
-    # Add name header if we can extract it
-    lines = resume_text.split('\n')
-    name_line = None
-    for line in lines[:5]:  # Check first 5 lines for name
-        line = line.strip()
-        if line and not line.isupper() and len(line) > 5 and len(line) < 50:
-            if not any(char in line for char in ['@', 'http', '(', ')']):
-                name_line = line
-                break
-    
-    if name_line:
-        html_content = f'''
-        <div class="resume-header">
-            <h1 class="resume-name">{name_line}</h1>
-        </div>
-        {html_content}
-        '''
-    
-    return html_content
+    return '\n'.join(html_parts)
 
 
 @app.route("/loading")

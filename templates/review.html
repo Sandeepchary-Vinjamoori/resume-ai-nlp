@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Review Your Resume - Resume AI</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Review Your Resume - Resume AI v3.0</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v={{ range(1000, 9999) | random }}">
     <style>
         .review-container {
             max-width: 1200px;
@@ -26,67 +29,56 @@
         
         .resume-content {
             font-family: 'Times New Roman', serif;
-            line-height: 0.9; /* Very tight line spacing for content */
-            color: #000000;
+            line-height: 1.2;
+            color: #333333;
             white-space: pre-wrap;
             font-size: 11pt;
             margin: 0;
             padding: 0;
         }
         
-        /* Section headings - teal/green color like the example */
-        .resume-content .resume-section-header,
-        .resume-section-header {
-            font-size: 12pt;
-            font-weight: bold;
-            color: #2d8659 !important; /* Teal/green color like the example */
-            margin: 16px 0 4px 0; /* Large space BEFORE section to separate sections */
-            padding: 0;
-            border-bottom: 1px solid #2d8659; /* Matching underline */
-            text-transform: none; /* No uppercase, normal case like example */
-            letter-spacing: normal;
-            line-height: 1.0;
-        }
-        
-        /* Main header (name) styling */
-        .resume-content .resume-header-text,
-        .resume-header-text {
-            font-size: 16pt;
-            font-weight: bold;
-            text-align: center;
-            margin: 0 0 4px 0; /* Minimal margin after name */
-            color: #000000 !important; /* Black like the example */
-            text-transform: none;
-            letter-spacing: normal;
-            line-height: 1.0;
-        }
-        
-        /* Subsection items (job titles, education entries) - reduced spacing */
-        .resume-content .resume-subsection,
-        .resume-subsection {
-            font-size: 11pt; /* Same size as all content */
-            margin: 3px 0 0 0; /* Reduced spacing between subsections */
-            padding: 0;
-            line-height: 0.9; /* Same tight spacing as all content */
-            color: #000000 !important;
-            font-weight: bold; /* Keep bold for subsection headers */
-        }
-        
-        /* All content - SAME spacing and text size for everything including subsection content */
-        .resume-content .resume-text,
-        .resume-text,
-        .resume-content .bullet-point,
-        .bullet-point,
-        .resume-content p,
-        .resume-content li,
-        .resume-content div:not(.resume-section-header):not(.resume-header-text):not(.resume-subsection) {
-            font-size: 11pt; /* Same size as subsections and all content */
-            margin: 0; /* NO margins - consistent spacing for all content */
-            padding: 0; /* NO padding */
-            line-height: 0.9; /* Same tight line spacing for all content */
+        /* Name - centered, bold, darker - UPDATED */
+        .resume-name {
+            font-size: 18pt !important;
+            font-weight: bold !important;
+            text-align: center !important;
+            margin: 0 0 8px 0 !important;
             color: #000000 !important;
         }
-
+        
+        /* Contact info - centered - UPDATED */
+        .resume-contact {
+            text-align: center !important;
+            margin: 0 0 16px 0 !important;
+            font-size: 11pt !important;
+            color: #333333 !important;
+        }
+        
+        /* Section headers - green with underline - UPDATED */
+        .resume-section {
+            font-size: 12pt !important;
+            font-weight: bold !important;
+            color: #2d8659 !important;
+            margin: 16px 0 8px 0 !important;
+            padding-bottom: 2px !important;
+            border-bottom: 1px solid #2d8659 !important;
+        }
+        
+        /* Regular content - LEFT ALIGNED - UPDATED */
+        .resume-text {
+            font-size: 11pt !important;
+            margin: 2px 0 !important;
+            color: #333333 !important;
+            text-align: left !important;
+        }
+        
+        /* Bullet points - LEFT ALIGNED - UPDATED */
+        .resume-bullet {
+            font-size: 11pt !important;
+            margin: 2px 0 2px 16px !important;
+            color: #333333 !important;
+            text-align: left !important;
+        }
         
         .edit-textarea {
             width: 100%;
@@ -140,6 +132,9 @@
             cursor: pointer;
             transition: all 0.3s ease;
             margin-bottom: 10px;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
         }
         
         .btn-primary {
@@ -190,50 +185,6 @@
             font-size: 16px;
         }
         
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255,255,255,0.9);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        
-        .loading-content {
-            text-align: center;
-        }
-        
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #007bff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .success-message {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #28a745;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            z-index: 1001;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-        }
-        
         @media (max-width: 768px) {
             .review-container {
                 grid-template-columns: 1fr;
@@ -249,88 +200,48 @@
                 padding: 20px;
             }
         }
-        
-        /* Modal Styles */
-        .auth-modal, .save-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1002;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .auth-modal-content, .save-modal-content {
-            background: white;
-            border-radius: 12px;
-            padding: 0;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-        
-        .auth-modal-header, .save-modal-header {
-            padding: 20px;
-            border-bottom: 1px solid #e0e0e0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .auth-modal-header h3, .save-modal-header h3 {
-            margin: 0;
-            color: #2c3e50;
-        }
-        
-        .auth-modal-close, .save-modal-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #7f8c8d;
-        }
-        
-        .auth-modal-body, .save-modal-body {
-            padding: 20px;
-        }
-        
-        .auth-modal-buttons, .save-modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .save-modal-body label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #555;
-        }
-        
-        .save-modal-body input {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-        
-        .save-modal-body input:focus {
-            outline: none;
-            border-color: #007bff;
-        }
     </style>
 </head>
 <body>
     <div class="review-container">
         <div class="resume-display">
-            <div id="resume-content" class="resume-content">{{ resume_text|e }}</div>
-            <textarea id="edit-textarea" class="edit-textarea">{{ resume_text|e }}</textarea>
+            <div id="resume-content" class="resume-content">
+                {% if resume_text %}
+                    {% set lines = resume_text.split('\n') %}
+                    {% for line in lines %}
+                        {% set trimmed = line.strip() %}
+                        {% if trimmed %}
+                            {% if loop.index0 == 0 and '|' not in trimmed and '@' not in trimmed %}
+                                <!-- Name - centered and dark -->
+                                <div style="text-align: center; color: #000000; font-weight: bold; font-size: 18pt; margin: 0 0 8px 0;">{{ line }}</div>
+                            {% elif '|' in trimmed or '@' in trimmed or trimmed|regex_search('\d{10}') %}
+                                <!-- Contact info - centered -->
+                                <div style="text-align: center; color: #333333; margin: 0 0 16px 0;">{{ line }}</div>
+                            {% elif trimmed.upper() in ['PROFESSIONAL SUMMARY', 'SUMMARY', 'OBJECTIVE', 'SKILLS', 'TECHNICAL SKILLS', 'CORE COMPETENCIES', 'EDUCATION', 'ACADEMIC BACKGROUND', 'EXPERIENCE', 'PROFESSIONAL EXPERIENCE', 'WORK EXPERIENCE', 'PROJECTS', 'KEY PROJECTS', 'NOTABLE PROJECTS', 'CERTIFICATIONS', 'CERTIFICATES', 'AWARDS', 'ACHIEVEMENTS', 'ACCOMPLISHMENTS'] %}
+                                <!-- Section headers - green with underline -->
+                                <div style="color: #2d8659; font-weight: bold; border-bottom: 1px solid #2d8659; margin: 16px 0 8px 0; padding-bottom: 2px; font-size: 12pt;">{{ line }}</div>
+                            {% elif trimmed.startswith('-') and trimmed.replace('-', '').strip() == '' %}
+                                <!-- Skip horizontal lines -->
+                            {% elif trimmed.startswith('•') or trimmed.startswith('-') or trimmed.startswith('*') %}
+                                <!-- Bullet points - left aligned -->
+                                <div style="text-align: left; color: #333333; margin: 2px 0 2px 16px;">{{ line }}</div>
+                            {% else %}
+                                <!-- Regular content - left aligned -->
+                                <div style="text-align: left; color: #333333; margin: 2px 0;">{{ line }}</div>
+                            {% endif %}
+                        {% else %}
+                            <br>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <h3>No Resume Content Found</h3>
+                        <p>Please go back to the form and generate a resume first.</p>
+                        <a href="/" style="color: #007bff;">← Go Back to Form</a>
+                    </div>
+                {% endif %}
+            </div>
+            <textarea id="edit-textarea" class="edit-textarea" style="display: none;">{{ resume_text if resume_text else '' }}</textarea>
         </div>
         
         <div class="control-panel">
@@ -375,111 +286,105 @@
             </div>
         </div>
     </div>
-    
-    <!-- Authentication Modal -->
-    <div id="auth-modal" class="auth-modal" style="display: none;">
-        <div class="auth-modal-content">
-            <div class="auth-modal-header">
-                <h3>Sign in to save your resume</h3>
-                <button class="auth-modal-close">&times;</button>
-            </div>
-            <div class="auth-modal-body">
-                <p>Create an account or sign in to save your resume and access it later from your dashboard.</p>
-                <div class="auth-modal-buttons">
-                    <a href="{{ url_for('auth.signup') }}" class="btn btn-primary">Create Account</a>
-                    <a href="{{ url_for('auth.signin') }}" class="btn btn-secondary">Sign In</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Save Resume Modal -->
-    <div id="save-modal" class="save-modal" style="display: none;">
-        <div class="save-modal-content">
-            <div class="save-modal-header">
-                <h3>Save Resume</h3>
-                <button class="save-modal-close">&times;</button>
-            </div>
-            <div class="save-modal-body">
-                <label for="resume-title">Resume Title:</label>
-                <input type="text" id="resume-title" placeholder="e.g., Software Engineer Resume" maxlength="200">
-                <div class="save-modal-buttons">
-                    <button id="confirm-save-btn" class="btn btn-primary">Save Resume</button>
-                    <button class="save-modal-close btn btn-secondary">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div id="loading-overlay" class="loading-overlay">
-        <div class="loading-content">
-            <div class="spinner"></div>
-            <p>Processing your request...</p>
-        </div>
-    </div>
 
     <script>
         let isEditing = false;
         let originalContent = '';
         
-        // Initialize
+        // Simple initialization - no complex formatting needed
         document.addEventListener('DOMContentLoaded', function() {
-            setupEventListeners();
-            originalContent = document.getElementById('edit-textarea').value;
-            applyMinimalStyling();
-            console.log('Page loaded, original content length:', originalContent.length);
+            console.log('🚀 Resume Review Page Loading...');
             
-            // Auto-enter edit mode if we're editing an existing resume
-            const editingResumeId = '{{ editing_resume_id }}';
-            const urlParams = new URLSearchParams(window.location.search);
-            const editParam = urlParams.get('edit');
-            
-            console.log('Editing resume ID:', editingResumeId);
-            console.log('Edit URL parameter:', editParam);
-            
-            // Simple approach: if edit parameter exists, click the edit button
-            if (editParam === '1') {
-                console.log('Edit parameter found, clicking edit button');
-                setTimeout(() => {
-                    const editButton = document.getElementById('edit-btn');
-                    if (editButton) {
-                        console.log('Clicking edit button...');
-                        editButton.click();
-                    } else {
-                        console.log('Edit button not found');
-                    }
-                }, 1000); // Longer delay to ensure everything is loaded
+            const editTextarea = document.getElementById('edit-textarea');
+            if (editTextarea) {
+                originalContent = editTextarea.value;
+                console.log('✅ Content loaded:', originalContent.length, 'characters');
             }
             
-            {% if editing_resume_id %}
-                console.log('Auto-entering edit mode for resume ID: {{ editing_resume_id }}');
-                setTimeout(() => {
-                    console.log('Triggering enterEditMode...');
-                    enterEditMode();
-                }, 500); // Small delay to ensure page is fully loaded
-            {% else %}
-                console.log('No editing_resume_id found, checking URL parameter');
-                if (editParam === '1') {
-                    console.log('Edit parameter found, entering edit mode');
-                    setTimeout(() => {
-                        console.log('Triggering enterEditMode via URL parameter...');
-                        enterEditMode();
-                    }, 500);
-                } else {
-                    console.log('Staying in view mode');
-                }
-            {% endif %}
+            setupButtons();
+            console.log('✅ Page ready');
         });
         
-        function applyMinimalStyling() {
+        function setupButtons() {
+            console.log('🔧 Setting up button event listeners...');
+            
+            // Edit functionality
+            const editBtn = document.getElementById('edit-btn');
+            const saveBtn = document.getElementById('save-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+            
+            if (editBtn) {
+                editBtn.addEventListener('click', function() {
+                    console.log('📝 Edit button clicked');
+                    enterEditMode();
+                });
+            }
+            
+            if (saveBtn) {
+                saveBtn.addEventListener('click', function() {
+                    console.log('💾 Save button clicked');
+                    saveChanges();
+                });
+            }
+            
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', function() {
+                    console.log('❌ Cancel button clicked');
+                    cancelEdit();
+                });
+            }
+            
+            // Download buttons
+            const downloadPdf = document.getElementById('download-pdf');
+            const downloadDocx = document.getElementById('download-docx');
+            
+            if (downloadPdf) {
+                downloadPdf.addEventListener('click', function() {
+                    console.log('📄 Download PDF clicked');
+                    downloadResume('pdf');
+                });
+            }
+            
+            if (downloadDocx) {
+                downloadDocx.addEventListener('click', function() {
+                    console.log('📝 Download DOCX clicked');
+                    downloadResume('docx');
+                });
+            }
+            
+            // Other buttons
+            const regenerateBtn = document.getElementById('regenerate-btn');
+            const startOverBtn = document.getElementById('start-over-btn');
+            
+            if (regenerateBtn) {
+                regenerateBtn.addEventListener('click', function() {
+                    console.log('🔄 Regenerate button clicked');
+                    regenerateResume();
+                });
+            }
+            
+            if (startOverBtn) {
+                startOverBtn.addEventListener('click', function() {
+                    console.log('🏠 Start Over button clicked');
+                    startOver();
+                });
+            }
+            
+            console.log('✅ All button event listeners set up');
+        }
+        
+        function formatResumeDisplay() {
             const resumeContent = document.getElementById('resume-content');
             if (!resumeContent) return;
             
             let content = resumeContent.textContent;
-            const lines = content.split('\n');
-            let styledContent = '';
+            if (!content) return;
             
-            // List of actual section headers that should be blue
+            console.log('🎨 Applying resume formatting...');
+            
+            const lines = content.split('\n');
+            let formattedHtml = '';
+            
             const sectionHeaders = [
                 'PROFESSIONAL SUMMARY', 'SUMMARY', 'OBJECTIVE',
                 'SKILLS', 'TECHNICAL SKILLS', 'CORE COMPETENCIES',
@@ -494,67 +399,45 @@
                 const line = lines[i];
                 const trimmedLine = line.trim();
                 
-                // First line (candidate name) - Use resume-header-text class
-                if (i === 0 && trimmedLine && !trimmedLine.includes('|') && !trimmedLine.includes('@')) {
-                    styledContent += `<div class="resume-header-text">${line}</div>\n`;
-                }
-                // Only actual section headers should be blue
-                else if (sectionHeaders.includes(trimmedLine.toUpperCase())) {
-                    styledContent += `<div class="resume-section-header">${line}</div>\n`;
-                }
-                // Horizontal lines - skip them as they're just formatting
-                else if (trimmedLine.match(/^-+$/)) {
-                    // Skip horizontal lines, they're just formatting
+                if (!trimmedLine) {
+                    formattedHtml += '<br>';
                     continue;
                 }
-                // Detect subsections (job titles, education entries, project names)
-                else if (trimmedLine && (
-                    // Job titles with company names
-                    (trimmedLine.includes(',') && (trimmedLine.includes('Intern') || trimmedLine.includes('Engineer') || trimmedLine.includes('Developer') || trimmedLine.includes('Manager'))) ||
-                    // Education entries
-                    (trimmedLine.includes('University') || trimmedLine.includes('College') || trimmedLine.includes('Bachelor') || trimmedLine.includes('Master') || trimmedLine.includes('Intermediate')) ||
-                    // Project names (usually short lines that aren't bullet points)
-                    (trimmedLine.length < 50 && !trimmedLine.startsWith('•') && !trimmedLine.startsWith('-') && !trimmedLine.startsWith('*') && !trimmedLine.includes(':') && !trimmedLine.includes('|'))
-                )) {
-                    styledContent += `<div class="resume-subsection">${line}</div>\n`;
+                
+                // First line is usually the name - FORCE CENTER AND DARK
+                if (i === 0 && !trimmedLine.includes('|') && !trimmedLine.includes('@')) {
+                    formattedHtml += `<div class="resume-name" style="text-align: center !important; color: #000000 !important; font-weight: bold !important; font-size: 18pt !important;">${line}</div>`;
+                    console.log('✅ Applied name formatting to:', trimmedLine);
                 }
-                // Bullet points - Use bullet-point class
+                // Contact info (contains | or @ or phone) - FORCE CENTER
+                else if (trimmedLine.includes('|') || trimmedLine.includes('@') || /\d{10}/.test(trimmedLine)) {
+                    formattedHtml += `<div class="resume-contact" style="text-align: center !important; color: #333333 !important;">${line}</div>`;
+                    console.log('✅ Applied contact formatting');
+                }
+                // Section headers - GREEN WITH UNDERLINE
+                else if (sectionHeaders.includes(trimmedLine.toUpperCase())) {
+                    formattedHtml += `<div class="resume-section" style="color: #2d8659 !important; font-weight: bold !important; border-bottom: 1px solid #2d8659 !important; margin: 16px 0 8px 0 !important;">${line}</div>`;
+                    console.log('✅ Applied section header formatting to:', trimmedLine);
+                }
+                // Skip horizontal lines
+                else if (/^-+$/.test(trimmedLine)) {
+                    continue;
+                }
+                // Bullet points - FORCE LEFT ALIGN
                 else if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-') || trimmedLine.startsWith('*')) {
-                    styledContent += `<div class="bullet-point">${line}</div>\n`;
+                    formattedHtml += `<div class="resume-bullet" style="text-align: left !important; color: #333333 !important; margin-left: 16px !important;">${line}</div>`;
                 }
-                // All other content - Use resume-text class (will be black)
-                else if (trimmedLine) {
-                    styledContent += `<div class="resume-text">${line}</div>\n`;
-                }
-                // Empty lines
+                // Regular content - FORCE LEFT ALIGN
                 else {
-                    styledContent += `<div>${line}</div>\n`;
+                    formattedHtml += `<div class="resume-text" style="text-align: left !important; color: #333333 !important;">${line}</div>`;
                 }
             }
             
-            resumeContent.innerHTML = styledContent;
-        }
-        
-        function setupEventListeners() {
-            // Edit functionality
-            document.getElementById('edit-btn').addEventListener('click', enterEditMode);
-            document.getElementById('save-btn').addEventListener('click', saveChanges);
-            document.getElementById('cancel-btn').addEventListener('click', cancelEdit);
-            
-            // Style change
-            document.getElementById('style-selector').addEventListener('change', changeStyle);
-            
-            // Download buttons
-            document.getElementById('download-pdf').addEventListener('click', () => downloadResume('pdf'));
-            document.getElementById('download-docx').addEventListener('click', () => downloadResume('docx'));
-            
-            // Navigation buttons
-            document.getElementById('regenerate-btn').addEventListener('click', regenerateResume);
-            document.getElementById('start-over-btn').addEventListener('click', startOver);
+            resumeContent.innerHTML = formattedHtml;
+            console.log('✅ Resume formatting applied with inline styles');
         }
         
         function enterEditMode() {
-            console.log('enterEditMode() called');
             isEditing = true;
             
             const resumeContent = document.getElementById('resume-content');
@@ -563,31 +446,18 @@
             const saveBtn = document.getElementById('save-btn');
             const cancelBtn = document.getElementById('cancel-btn');
             
-            console.log('Elements found:', {
-                resumeContent: !!resumeContent,
-                editTextarea: !!editTextarea,
-                editBtn: !!editBtn,
-                saveBtn: !!saveBtn,
-                cancelBtn: !!cancelBtn
-            });
+            if (resumeContent) resumeContent.style.display = 'none';
+            if (editTextarea) editTextarea.style.display = 'block';
+            if (editBtn) editBtn.style.display = 'none';
+            if (saveBtn) saveBtn.style.display = 'block';
+            if (cancelBtn) cancelBtn.style.display = 'block';
             
-            // Hide resume content and show textarea
-            resumeContent.style.display = 'none';
-            editTextarea.style.display = 'block';
+            if (editTextarea) editTextarea.focus();
             
-            // Update buttons
-            editBtn.style.display = 'none';
-            saveBtn.style.display = 'block';
-            cancelBtn.style.display = 'block';
-            
-            // Focus on textarea
-            editTextarea.focus();
-            
-            console.log('Edit mode activated successfully');
+            console.log('✅ Entered edit mode');
         }
         
         function exitEditMode() {
-            console.log('Exiting edit mode');
             isEditing = false;
             
             const resumeContent = document.getElementById('resume-content');
@@ -596,29 +466,26 @@
             const saveBtn = document.getElementById('save-btn');
             const cancelBtn = document.getElementById('cancel-btn');
             
-            // Show resume content and hide textarea
-            resumeContent.style.display = 'block';
-            editTextarea.style.display = 'none';
+            if (resumeContent) resumeContent.style.display = 'block';
+            if (editTextarea) editTextarea.style.display = 'none';
+            if (editBtn) editBtn.style.display = 'block';
+            if (saveBtn) saveBtn.style.display = 'none';
+            if (cancelBtn) cancelBtn.style.display = 'none';
             
-            // Update buttons
-            editBtn.style.display = 'block';
-            saveBtn.style.display = 'none';
-            cancelBtn.style.display = 'none';
-            
-            console.log('Edit mode deactivated');
+            console.log('✅ Exited edit mode');
         }
         
         function saveChanges() {
             const editTextarea = document.getElementById('edit-textarea');
-            const updatedContent = editTextarea.value;
+            if (!editTextarea) return;
             
+            const updatedContent = editTextarea.value;
             if (!updatedContent.trim()) {
                 alert('Resume content cannot be empty.');
                 return;
             }
             
-            console.log('Saving changes, content length:', updatedContent.length);
-            showLoading();
+            console.log('💾 Saving changes...');
             
             fetch('/update_resume', {
                 method: 'POST',
@@ -634,72 +501,39 @@
             .then(data => {
                 if (data.success) {
                     // Update the display content
-                    document.getElementById('resume-content').textContent = updatedContent;
+                    const resumeContent = document.getElementById('resume-content');
+                    if (resumeContent) {
+                        resumeContent.textContent = updatedContent;
+                        formatResumeDisplay();
+                    }
+                    
                     originalContent = updatedContent;
-                    
-                    // Reapply minimal styling
-                    applyMinimalStyling();
-                    
                     exitEditMode();
                     
-                    // Show success message
-                    showSuccessMessage('Resume updated successfully!');
-                    console.log('Resume saved successfully');
+                    alert('Resume updated successfully!');
+                    console.log('✅ Resume saved successfully');
                 } else {
                     alert('Error updating resume: ' + data.error);
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.error('❌ Error:', error);
                 alert('Error updating resume: ' + error.message);
-            })
-            .finally(() => {
-                hideLoading();
             });
         }
         
         function cancelEdit() {
-            document.getElementById('edit-textarea').value = originalContent;
+            const editTextarea = document.getElementById('edit-textarea');
+            if (editTextarea) {
+                editTextarea.value = originalContent;
+            }
             exitEditMode();
-        }
-        
-        function changeStyle() {
-            const newStyle = document.getElementById('style-selector').value;
-            const resumeText = document.getElementById('edit-textarea').value;
-            
-            console.log('Changing style to:', newStyle);
-            showLoading();
-            
-            fetch('/change_style', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    resume_text: resumeText,
-                    style: newStyle
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Style change doesn't affect the raw text, just the formatting
-                    console.log('Style changed successfully');
-                } else {
-                    alert('Error changing style: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error changing style');
-            })
-            .finally(() => {
-                hideLoading();
-            });
         }
         
         function downloadResume(format) {
             const editTextarea = document.getElementById('edit-textarea');
+            if (!editTextarea) return;
+            
             const resumeText = editTextarea.value;
             const style = document.getElementById('style-selector').value;
             
@@ -708,8 +542,14 @@
                 return;
             }
             
-            console.log(`Downloading resume as ${format}`);
-            showLoading();
+            console.log(`📥 Downloading resume as ${format}`);
+            
+            // Show loading state
+            const downloadBtn = document.getElementById(`download-${format}`);
+            if (downloadBtn) {
+                downloadBtn.textContent = `Downloading ${format.toUpperCase()}...`;
+                downloadBtn.disabled = true;
+            }
             
             fetch('/download_resume', {
                 method: 'POST',
@@ -723,14 +563,13 @@
                 })
             })
             .then(response => {
-                if (response.ok) {
-                    return response.blob();
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                return response.json().then(data => {
-                    throw new Error(data.error || 'Download failed');
-                });
+                return response.blob();
             })
             .then(blob => {
+                // Create download link
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.style.display = 'none';
@@ -738,24 +577,31 @@
                 a.download = `resume.${format}`;
                 document.body.appendChild(a);
                 a.click();
+                
+                // Cleanup
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
                 
-                showSuccessMessage(`Resume downloaded as ${format.toUpperCase()}`);
-                console.log(`Downloaded resume as ${format}`);
+                console.log(`✅ Downloaded resume as ${format}`);
+                alert(`Resume downloaded as ${format.toUpperCase()} successfully!`);
             })
             .catch(error => {
-                console.error('Download error:', error);
-                alert('Error downloading resume: ' + error.message);
+                console.error('❌ Download error:', error);
+                alert(`Error downloading resume: ${error.message}`);
             })
             .finally(() => {
-                hideLoading();
+                // Reset button state
+                if (downloadBtn) {
+                    downloadBtn.textContent = `📄 Download ${format.toUpperCase()}`;
+                    downloadBtn.disabled = false;
+                }
             });
         }
         
         function regenerateResume() {
             if (confirm('This will regenerate your resume using AI. Continue?')) {
-                showLoading();
+                console.log('🔄 Regenerating resume...');
+                
                 fetch('/regenerate_resume', {
                     method: 'POST'
                 })
@@ -768,183 +614,16 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.error('❌ Error:', error);
                     alert('Error regenerating resume');
-                })
-                .finally(() => {
-                    hideLoading();
                 });
             }
         }
         
         function startOver() {
-            if (confirm('This will start a new resume from scratch. Continue?')) {
+            if (confirm('This will take you back to the form to start over. Continue?')) {
                 window.location.href = '/';
             }
-        }
-        
-        function showLoading() {
-            document.getElementById('loading-overlay').style.display = 'flex';
-        }
-        
-        function hideLoading() {
-            document.getElementById('loading-overlay').style.display = 'none';
-        }
-        
-        function showSuccessMessage(message) {
-            const successMsg = document.createElement('div');
-            successMsg.className = 'success-message';
-            successMsg.textContent = message;
-            document.body.appendChild(successMsg);
-            setTimeout(() => {
-                if (document.body.contains(successMsg)) {
-                    document.body.removeChild(successMsg);
-                }
-            }, 3000);
-        }
-        
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey || e.metaKey) {
-                if (e.key === 's') {
-                    e.preventDefault();
-                    if (isEditing) {
-                        saveChanges();
-                    }
-                } else if (e.key === 'e') {
-                    e.preventDefault();
-                    if (!isEditing) {
-                        enterEditMode();
-                    }
-                }
-            }
-            if (e.key === 'Escape' && isEditing) {
-                cancelEdit();
-            }
-        });
-
-        // Save Resume Functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const saveResumeBtn = document.getElementById('save-resume-btn');
-            const updateResumeBtn = document.getElementById('update-resume-btn');
-            const authModal = document.getElementById('auth-modal');
-            const saveModal = document.getElementById('save-modal');
-            const confirmSaveBtn = document.getElementById('confirm-save-btn');
-            const resumeTitleInput = document.getElementById('resume-title');
-
-            // Save Resume Button Click
-            if (saveResumeBtn) {
-                saveResumeBtn.addEventListener('click', function() {
-                    {% if user and user.is_authenticated %}
-                        // User is logged in, show save modal
-                        saveModal.style.display = 'flex';
-                        resumeTitleInput.focus();
-                    {% else %}
-                        // User not logged in, show auth modal
-                        authModal.style.display = 'flex';
-                    {% endif %}
-                });
-            }
-
-            // Update Resume Button Click
-            if (updateResumeBtn) {
-                updateResumeBtn.addEventListener('click', function() {
-                    updateExistingResume();
-                });
-            }
-
-            // Confirm Save Button Click
-            if (confirmSaveBtn) {
-                confirmSaveBtn.addEventListener('click', function() {
-                    const title = resumeTitleInput.value.trim();
-                    if (!title) {
-                        alert('Please enter a title for your resume');
-                        return;
-                    }
-                    saveResumeToDatabase(title);
-                });
-            }
-
-            // Close modals
-            document.querySelectorAll('.auth-modal-close, .save-modal-close').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    authModal.style.display = 'none';
-                    saveModal.style.display = 'none';
-                });
-            });
-
-            // Close modals on outside click
-            window.addEventListener('click', function(e) {
-                if (e.target === authModal) {
-                    authModal.style.display = 'none';
-                }
-                if (e.target === saveModal) {
-                    saveModal.style.display = 'none';
-                }
-            });
-        });
-
-        function saveResumeToDatabase(title) {
-            showLoading();
-            
-            fetch('/save_resume', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    title: title
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('save-modal').style.display = 'none';
-                    showSuccessMessage(data.message);
-                    
-                    // Redirect to dashboard after a short delay
-                    setTimeout(() => {
-                        window.location.href = '/dashboard';
-                    }, 2000);
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error saving resume');
-            })
-            .finally(() => {
-                hideLoading();
-            });
-        }
-
-        function updateExistingResume() {
-            showLoading();
-            
-            const editingResumeId = {{ editing_resume_id if editing_resume_id else 'null' }};
-            
-            fetch(`/update_resume/${editingResumeId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showSuccessMessage(data.message);
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error updating resume');
-            })
-            .finally(() => {
-                hideLoading();
-            });
         }
     </script>
 </body>

@@ -207,67 +207,59 @@ def export_to_pdf(resume_text, filepath):
         # Get styles
         styles = getSampleStyleSheet()
         
-        # Custom styles for better formatting - matching web display
+        # Custom styles to match web display exactly
         name_style = ParagraphStyle(
             'ResumeName',
             parent=styles['Normal'],
-            fontSize=16,  # Match web display (16pt)
-            spaceAfter=4,
+            fontSize=18,  # Match web display (18pt)
+            spaceAfter=8,
             spaceBefore=0,
             alignment=TA_CENTER,  # Centered
-            textColor=black,  # Black color like web display
-            fontName='Helvetica-Bold'
+            textColor=black,  # Dark black like web display
+            fontName='Times-Bold'
         )
         
         contact_style = ParagraphStyle(
             'ContactInfo',
             parent=styles['Normal'],
             fontSize=11,  # Match web display
-            spaceAfter=4,
+            spaceAfter=16,
             spaceBefore=0,
             alignment=TA_CENTER,  # Centered like web display
-            textColor=black
+            textColor=Color(51/255, 51/255, 51/255)  # #333333
         )
         
         header_style = ParagraphStyle(
             'SectionHeader',
             parent=styles['Normal'],
             fontSize=12,  # Match web display (12pt)
-            spaceAfter=4,
+            spaceAfter=8,
             spaceBefore=16,  # Match web display spacing
-            textColor=teal_color,  # Exact teal/green color like web display
-            fontName='Helvetica-Bold'
+            textColor=teal_color,  # Green color like web display
+            fontName='Times-Bold'
         )
         
         body_style = ParagraphStyle(
             'BodyText',
             parent=styles['Normal'],
             fontSize=11,  # Match web display (11pt)
-            spaceAfter=0,  # Tight spacing like web display
-            spaceBefore=0,
+            spaceAfter=2,
+            spaceBefore=2,
             leftIndent=0,
-            textColor=black
+            textColor=Color(51/255, 51/255, 51/255),  # #333333
+            alignment=TA_LEFT  # LEFT ALIGNED like web
         )
         
         bullet_style = ParagraphStyle(
             'BulletText',
             parent=styles['Normal'],
             fontSize=11,  # Match web display (11pt)
-            spaceAfter=0,  # Tight spacing like web display
-            spaceBefore=0,
-            leftIndent=20,
-            bulletIndent=10,
-            textColor=black
-        )
-        
-        subsection_style = ParagraphStyle(
-            'SubsectionText',
-            parent=styles['Normal'],
-            fontSize=11,  # Match web display (11pt)
-            spaceAfter=0,
-            spaceBefore=3,  # Small spacing like web display
-            textColor=black,
-            fontName='Helvetica-Bold'  # Bold like web display
+            spaceAfter=2,
+            spaceBefore=2,
+            leftIndent=16,  # Match web display
+            bulletIndent=0,
+            textColor=Color(51/255, 51/255, 51/255),  # #333333
+            alignment=TA_LEFT  # LEFT ALIGNED like web
         )
         
         # Build content with proper page handling

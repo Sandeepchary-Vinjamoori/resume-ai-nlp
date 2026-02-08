@@ -293,31 +293,34 @@ def _build_education_section(data: Dict[str, Any], enhancer) -> str:
         if degree_field:
             entry_parts.append(' '.join(degree_field))
         
-        # Institution and dates on second line
+        # Institution, GPA, and dates on second line - ALL IN ONE LINE
         institution_info = []
         if entry.get('institution'):
             institution_info.append(entry['institution'])
         
+        # Add GPA if available
+        if entry.get('gpa'):
+            institution_info.append(f"GPA: {entry['gpa']}")
+        
+        # Format date range more concisely
         if entry.get('start') and entry.get('end'):
-            institution_info.append(f"| Graduated: {entry['end']}")
+            # Format as "start-end" (e.g., "2022-2026")
+            start_year = entry['start'].split('-')[0] if '-' in entry['start'] else entry['start']
+            end_year = entry['end'].split('-')[0] if '-' in entry['end'] else entry['end']
+            institution_info.append(f"{start_year}-{end_year}")
         elif entry.get('end'):
-            institution_info.append(f"| Graduated: {entry['end']}")
+            # If only end date, show just the year
+            end_year = entry['end'].split('-')[0] if '-' in entry['end'] else entry['end']
+            institution_info.append(f"{end_year}")
         
         if institution_info:
-            entry_parts.append(' '.join(institution_info))
+            entry_parts.append(' | '.join(institution_info))
         
-        # Additional info (GPA, achievements)
-        additional_info = []
-        if entry.get('gpa'):
-            additional_info.append(f"GPA: {entry['gpa']}")
-        
+        # Additional achievements on separate line if available
         if entry.get('achievements'):
             achievements = entry['achievements'].strip()
             if achievements:
-                additional_info.append(achievements)
-        
-        if additional_info:
-            entry_parts.append(', '.join(additional_info))
+                entry_parts.append(achievements)
         
         # Add formatted entry
         if entry_parts:
