@@ -15,6 +15,73 @@
             background: #f5f5f5;
         }
         
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            min-width: 300px;
+            max-width: 500px;
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-out;
+            font-weight: 500;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+        
+        .notification.info {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+        
+        .notification-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-close {
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+        
+        .notification-close:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -210,9 +277,124 @@
         .resume-content br {
             display: none !important;
         }
+        
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 500px;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .close {
+            font-size: 24px;
+            font-weight: bold;
+            color: #999;
+            cursor: pointer;
+            line-height: 1;
+        }
+        
+        .close:hover {
+            color: #333;
+        }
+        
+        .modal-body {
+            padding: 24px;
+        }
+        
+        .modal-body label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .modal-body input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+        
+        .modal-body input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        
+        .modal-info {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .modal-info p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .modal-footer {
+            padding: 16px 24px 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        
+        .modal-footer .btn {
+            width: auto;
+            margin: 0;
+            padding: 10px 20px;
+        }
     </style>
 </head>
 <body>
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
+    
     <div class="container">
         <div class="resume-display">
             <div id="resume-content" class="resume-content">
@@ -257,11 +439,7 @@
         <div class="controls">
             <h3>Resume Controls</h3>
             
-            <label>Resume Style:</label>
-            <select id="style-selector" class="style-selector">
-                <option value="simple" {{ 'selected' if style == 'simple' else '' }}>Simple</option>
-                <option value="modern" {{ 'selected' if style == 'modern' else '' }}>Modern</option>
-            </select>
+            <button id="save-resume-btn" class="btn btn-success">💾 Save Resume</button>
             
             <button id="edit-btn" class="btn btn-warning">✏️ Edit Resume</button>
             <button id="save-btn" class="btn btn-success" style="display: none;">💾 Save Changes</button>
@@ -272,6 +450,27 @@
             
             <button id="regenerate-btn" class="btn btn-secondary">🔄 Regenerate</button>
             <button id="start-over-btn" class="btn btn-secondary">🏠 Start Over</button>
+        </div>
+    </div>
+
+    <!-- Save Resume Modal -->
+    <div id="save-resume-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💾 Save Resume</h3>
+                <span class="close" id="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label for="resume-title">Resume Title:</label>
+                <input type="text" id="resume-title" placeholder="e.g., Software Engineer Resume, Marketing Manager CV" maxlength="100">
+                <div class="modal-info">
+                    <p>Give your resume a descriptive name to easily find it later in your dashboard.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-save" class="btn btn-secondary">Cancel</button>
+                <button id="confirm-save" class="btn btn-success">Save Resume</button>
+            </div>
         </div>
     </div>
 
@@ -642,14 +841,236 @@
                     }
                 });
             }
+            
+            // Save Resume functionality
+            const saveResumeBtn = document.getElementById('save-resume-btn');
+            const saveModal = document.getElementById('save-resume-modal');
+            const closeModal = document.getElementById('close-modal');
+            const cancelSave = document.getElementById('cancel-save');
+            const confirmSave = document.getElementById('confirm-save');
+            const resumeTitleInput = document.getElementById('resume-title');
+            
+            if (saveResumeBtn) {
+                saveResumeBtn.addEventListener('click', function() {
+                    console.log('Save resume clicked');
+                    showSaveModal();
+                });
+            }
+            
+            if (closeModal) {
+                closeModal.addEventListener('click', hideSaveModal);
+            }
+            
+            if (cancelSave) {
+                cancelSave.addEventListener('click', hideSaveModal);
+            }
+            
+            if (confirmSave) {
+                confirmSave.addEventListener('click', saveResume);
+            }
+            
+            // Close modal when clicking outside
+            if (saveModal) {
+                saveModal.addEventListener('click', function(e) {
+                    if (e.target === saveModal) {
+                        hideSaveModal();
+                    }
+                });
+            }
+            
+            // Handle Enter key in title input
+            if (resumeTitleInput) {
+                resumeTitleInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        saveResume();
+                    }
+                });
+            }
         });
+        
+        function showSaveModal() {
+            const modal = document.getElementById('save-resume-modal');
+            const titleInput = document.getElementById('resume-title');
+            
+            if (modal && titleInput) {
+                modal.style.display = 'flex';
+                titleInput.focus();
+                
+                // Generate a default title based on current date
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                titleInput.placeholder = `Resume - ${dateStr}`;
+            }
+        }
+        
+        function hideSaveModal() {
+            const modal = document.getElementById('save-resume-modal');
+            const titleInput = document.getElementById('resume-title');
+            
+            if (modal && titleInput) {
+                modal.style.display = 'none';
+                titleInput.value = '';
+            }
+        }
+        
+        function saveResume() {
+            const titleInput = document.getElementById('resume-title');
+            const title = titleInput.value.trim();
+            
+            if (!title) {
+                showNotification('Please enter a title for your resume.', 'warning');
+                titleInput.focus();
+                return;
+            }
+            
+            if (title.length < 3) {
+                showNotification('Resume title must be at least 3 characters long.', 'warning');
+                titleInput.focus();
+                return;
+            }
+            
+            // Show loading state
+            const confirmBtn = document.getElementById('confirm-save');
+            const originalText = confirmBtn.textContent;
+            confirmBtn.textContent = 'Saving...';
+            confirmBtn.disabled = true;
+            
+            // Get current resume content
+            const resumeText = document.getElementById('edit-textarea').value;
+            const style = '{{ style }}'; // Get current style from template
+            
+            // Send save request
+            fetch('/save_resume', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: title,
+                    resume_text: resumeText,
+                    style: style
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message || 'Resume saved successfully!', 'success', 3000);
+                    hideSaveModal();
+                    
+                    // Automatically redirect to dashboard after a short delay
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1500);
+                } else {
+                    // Handle authentication required
+                    if (data.error && data.error.includes('login')) {
+                        if (confirm('You need to sign in to save resumes. Would you like to sign in now?')) {
+                            // Store current resume in session for after login
+                            fetch('/store_temp_resume', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    content: resumeText,
+                                    style: style,
+                                    title: title
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(storeData => {
+                                if (storeData.success) {
+                                    // Redirect to signin with return URL
+                                    window.location.href = '/auth/signin?next=' + encodeURIComponent('/save_temp_resume_after_auth');
+                                } else {
+                                    // Fallback to regular signin
+                                    window.location.href = '/auth/signin';
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error storing temp resume:', error);
+                                window.location.href = '/auth/signin';
+                            });
+                        }
+                    } else {
+                        showNotification('Error: ' + (data.error || 'Failed to save resume'), 'error');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Save error:', error);
+                showNotification('Error saving resume: ' + error.message, 'error');
+            })
+            .finally(() => {
+                // Reset button state
+                confirmBtn.textContent = originalText;
+                confirmBtn.disabled = false;
+            });
+        }
+        
+        // Notification System Functions
+        function showNotification(message, type = 'success', duration = 4000) {
+            const container = document.getElementById('notification-container');
+            if (!container) return;
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            // Set icon based on type
+            let icon = '✅';
+            if (type === 'error') icon = '❌';
+            if (type === 'info') icon = 'ℹ️';
+            if (type === 'warning') icon = '⚠️';
+            
+            notification.innerHTML = `
+                <div class="notification-icon">${icon}</div>
+                <div class="notification-content">${message}</div>
+                <button class="notification-close" onclick="hideNotification(this.parentElement)">×</button>
+            `;
+            
+            // Add to container
+            container.appendChild(notification);
+            
+            // Trigger animation
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Auto-hide after duration
+            setTimeout(() => {
+                hideNotification(notification);
+            }, duration);
+            
+            return notification;
+        }
+        
+        function hideNotification(notification) {
+            if (!notification) return;
+            
+            notification.classList.remove('show');
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.parentElement.removeChild(notification);
+                }
+            }, 300);
+        }
+        
+        function hideAllNotifications() {
+            const notifications = document.querySelectorAll('.notification');
+            notifications.forEach(hideNotification);
+        }
         
         function downloadResume(format) {
             const resumeText = document.getElementById('edit-textarea').value;
-            const style = document.getElementById('style-selector').value;
+            const style = '{{ style }}'; // Get current style from template
             
             if (!resumeText.trim()) {
-                alert('No content to download.');
+                showNotification('No content to download.', 'warning');
                 return;
             }
             
@@ -673,10 +1094,10 @@
                 a.download = `resume.${format}`;
                 a.click();
                 URL.revokeObjectURL(url);
-                alert(`Resume downloaded as ${format.toUpperCase()}`);
+                showNotification(`Resume downloaded as ${format.toUpperCase()}`, 'success');
             })
             .catch(error => {
-                alert('Download error: ' + error.message);
+                showNotification('Download error: ' + error.message, 'error');
             });
         }
     </script>

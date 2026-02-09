@@ -242,11 +242,54 @@ def regenerate_resume():
 
 
 @app.route("/save_resume", methods=["POST"])
-@login_required
 def save_resume():
-    """Save current resume from session to database"""
+    """Save current resume - handles both authenticated and unauthenticated users"""
     try:
-        # Get resume data from session
+        # Check if user is authenticated
+        if not current_user.is_authenticated:
+            return jsonify({'success': False, 'error': 'Please login to save resumes'})
+        
+        # Get resume data from request (for review page) or session (for dashboard)
+        data = request.get_json()
+        if data and 'resume_text' in data:
+            # Direct save from review page
+            title = data.get('title', '').strip()
+            resume_text = data.get('resume_text', '')
+            style = data.get('style', 'modern')
+            
+            if not title:
+                return jsonify({'success': False, 'error': 'Resume title is required'})
+            
+            if not resume_text.strip():
+                return jsonify({'success': False, 'error': 'Resume content cannot be empty'})
+            
+            # Check if title already exists for this user
+            existing = Resume.query.filter_by(user_id=current_user.id, title=title).first()
+            if existing:
+                return jsonify({'success': False, 'error': 'A resume with this title already exists'})
+            
+            # Create new resume
+            resume = Resume(
+                user_id=current_user.id,
+                title=title,
+                content=resume_text,
+                style=style
+            )
+            
+            # Try to get form data from session if available
+            if 'resume_data' in session and 'form_data' in session['resume_data']:
+                resume.set_form_data(session['resume_data']['form_data'])
+            
+            db.session.add(resume)
+            db.session.commit()
+            
+            return jsonify({
+                'success': True, 
+                'message': f'Resume "{title}" saved successfully!',
+                'resume_id': resume.id
+            })
+        
+        # Original session-based save logic for backward compatibility
         if 'resume_data' not in session:
             return jsonify({'success': False, 'error': 'No resume data found'})
         
@@ -306,7 +349,166 @@ def save_resume():
         
     except Exception as e:
         db.session.rollback()
+        logger.error(f"Error saving resume: {str(e)}")
         return jsonify({'success': False, 'error': 'Failed to save resume'})
+
+
+@app.route("/get_resume_content/<resume_id>")
+@login_required
+def get_resume_content(resume_id):
+    """Get resume content for viewing in dashboard"""
+    try:
+        # Get resume (ensure it belongs to current user)
+        resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
+        
+        if not resume:
+            return jsonify({'success': False, 'error': 'Resume not found'})
+        
+        # Format the resume content using the same logic as review page
+        formatted_html = format_resume_for_display(resume.content)
+        
+        return jsonify({
+            'success': True,
+            'content': resume.content,
+            'formatted_html': formatted_html,
+            'title': resume.title,
+            'style': resume.style
+        })
+        
+    except Exception as e:
+        logger.error(f"Error fetching resume content: {str(e)}")
+        return jsonify({'success': False, 'error': 'Failed to fetch resume content'})
+
+
+def format_resume_for_display(resume_text):
+    """Format resume text using the same logic as the review template"""
+    if not resume_text:
+        return '<div style="text-align: center; padding: 40px; color: #666;"><h3>No Resume Content</h3></div>'
+    
+    lines = resume_text.split('\n')
+    html_parts = []
+    
+    for i, line in enumerate(lines):
+        trimmed = line.strip()
+        
+        if not trimmed:
+            # Empty line - add minimal spacing
+            html_parts.append('<div class="empty-line" style="height: 2px; margin: 0;"></div>')
+            continue
+        
+        # Name - first line
+        if i == 0 and '|' not in trimmed and '@' not in trimmed:
+            html_parts.append(f'<div class="name">{line}</div>')
+        
+        # Contact info
+        elif ('|' in trimmed or '@' in trimmed or 
+              (len(trimmed) > 8 and re.search(r'\d{10}', trimmed))):
+            # Only center if it's actually contact info (not education with pipes)
+            if not any(word in trimmed.lower() for word in ['university', 'college', 'gpa', 'bachelor', 'master', 'degree', 'engineering', 'science', 'technology', 'intermediate']):
+                html_parts.append(f'<div class="contact">{line}</div>')
+            else:
+                html_parts.append(f'<div class="content" style="text-align: left !important;">{line}</div>')
+        
+        # Section headers - using the exact same logic as review template
+        elif (trimmed.upper() in ['PROFESSIONAL SUMMARY', 'SUMMARY', 'SKILLS', 'EDUCATION', 'EXPERIENCE', 'PROJECTS', 'CERTIFICATIONS', 'ACHIEVEMENTS', 'AWARDS', 'PUBLICATIONS', 'LANGUAGES', 'INTERESTS', 'HOBBIES', 'VOLUNTEER', 'LEADERSHIP', 'ACTIVITIES', 'HONORS'] or
+              'SUMMARY' in trimmed.upper() or 'EDUCATION' in trimmed.upper() or 
+              'EXPERIENCE' in trimmed.upper() or 'PROJECTS' in trimmed.upper() or 
+              'SKILLS' in trimmed.upper() or
+              (trimmed.endswith(':') and len(trimmed) < 50 and len(trimmed.split()) <= 4 and trimmed.count(':') == 1 and ',' not in trimmed and 'programming' not in trimmed.lower() and 'frameworks' not in trimmed.lower() and 'databases' not in trimmed.lower() and 'cloud' not in trimmed.lower() and 'tools' not in trimmed.lower() and 'soft' not in trimmed.lower()) or
+              (trimmed.isupper() and len(trimmed) > 2 and len(trimmed) < 50 and len(trimmed.split()) <= 4 and trimmed.isalpha() and ':' not in trimmed and ',' not in trimmed) or
+              (len(trimmed.split()) == 1 and trimmed.istitle() and len(trimmed) > 3 and len(trimmed) < 30 and trimmed.isalpha() and ':' not in trimmed and ',' not in trimmed)):
+            html_parts.append(f'<div class="section">{line}</div>')
+        
+        # Skip horizontal lines
+        elif trimmed.startswith('-') and trimmed.replace('-', '').strip() == '':
+            continue
+        
+        # Bullet points
+        elif trimmed.startswith('•') or trimmed.startswith('-') or trimmed.startswith('*'):
+            html_parts.append(f'<div class="bullet">{line}</div>')
+        
+        # All other content
+        else:
+            html_parts.append(f'<div class="content" style="text-align: left !important;">{line}</div>')
+    
+    return '\n'.join(html_parts)
+
+
+@app.route("/store_temp_resume", methods=["POST"])
+def store_temp_resume():
+    """Store resume temporarily for unauthenticated users"""
+    try:
+        data = request.get_json()
+        content = data.get('content', '').strip()
+        style = data.get('style', 'modern')
+        title = data.get('title', '').strip()
+        
+        if not content:
+            return jsonify({'success': False, 'error': 'Resume content cannot be empty'})
+        
+        # Store in session for after authentication
+        session['temp_resume'] = {
+            'content': content,
+            'style': style,
+            'title': title,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        logger.info("Temporary resume stored in session")
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        logger.error(f"Error storing temp resume: {e}")
+        return jsonify({'success': False, 'error': 'Failed to store resume'})
+
+
+@app.route("/save_temp_resume_after_auth")
+@login_required
+def save_temp_resume_after_auth():
+    """Save temporarily stored resume after user authentication"""
+    try:
+        temp_resume = session.get('temp_resume')
+        
+        if not temp_resume:
+            flash("No resume found to save.", "error")
+            return redirect(url_for('review'))
+        
+        title = temp_resume.get('title', '').strip()
+        content = temp_resume.get('content', '').strip()
+        style = temp_resume.get('style', 'modern')
+        
+        if not title or not content:
+            flash("Invalid resume data.", "error")
+            return redirect(url_for('review'))
+        
+        # Check if title already exists for this user
+        existing = Resume.query.filter_by(user_id=current_user.id, title=title).first()
+        if existing:
+            # Add timestamp to make it unique
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            title = f"{title}_{timestamp}"
+        
+        # Create new resume
+        resume = Resume(
+            user_id=current_user.id,
+            title=title,
+            content=content,
+            style=style
+        )
+        
+        db.session.add(resume)
+        db.session.commit()
+        
+        # Clear temp resume from session
+        session.pop('temp_resume', None)
+        
+        flash(f'Resume "{title}" saved successfully!', 'success')
+        return redirect(url_for('dashboard.dashboard'))
+        
+    except Exception as e:
+        logger.error(f"Error saving temp resume after auth: {e}")
+        flash("Error saving resume.", "error")
+        return redirect(url_for('review'))
 
 
 @app.route("/edit_resume/<resume_id>")

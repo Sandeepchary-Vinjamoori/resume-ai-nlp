@@ -195,29 +195,9 @@
         </div>
         
         <div class="control-panel">
-            <h3>Resume Controls</h3>
-            
-            <div class="control-group">
-                <label for="style-selector">Resume Style:</label>
-                <select id="style-selector" class="style-selector">
-                    <option value="simple" {{ 'selected' if style == 'simple' else '' }}>Simple</option>
-                    <option value="modern" {{ 'selected' if style == 'modern' else '' }}>Modern</option>
-                    <option value="academic" {{ 'selected' if style == 'academic' else '' }}>Academic</option>
-                </select>
-            </div>
-            
             <div class="control-group">
                 <button id="save-changes-btn" class="btn btn-success">💾 Save Changes</button>
                 <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-secondary">❌ Cancel</a>
-            </div>
-            
-            <div class="control-group">
-                <button id="download-pdf" class="btn btn-primary">📄 Download PDF</button>
-                <button id="download-docx" class="btn btn-primary">📝 Download DOCX</button>
-            </div>
-            
-            <div class="control-group">
-                <a href="{{ url_for('review') }}" class="btn btn-secondary">👁️ Preview</a>
             </div>
         </div>
     </div>
@@ -242,19 +222,12 @@
         function setupEventListeners() {
             // Save changes button
             document.getElementById('save-changes-btn').addEventListener('click', saveChanges);
-            
-            // Style change
-            document.getElementById('style-selector').addEventListener('change', changeStyle);
-            
-            // Download buttons
-            document.getElementById('download-pdf').addEventListener('click', () => downloadResume('pdf'));
-            document.getElementById('download-docx').addEventListener('click', () => downloadResume('docx'));
         }
         
         function saveChanges() {
             const editTextarea = document.getElementById('edit-textarea');
             const updatedContent = editTextarea.value;
-            const style = document.getElementById('style-selector').value;
+            const style = '{{ style }}'; // Use the current resume style
             
             if (!updatedContent.trim()) {
                 alert('Resume content cannot be empty.');
@@ -279,8 +252,13 @@
             .then(data => {
                 if (data.success) {
                     originalContent = updatedContent;
-                    showSuccessMessage('Resume updated successfully!');
+                    showSuccessMessage('Resume updated successfully! Redirecting to dashboard...');
                     console.log('Resume saved successfully');
+                    
+                    // Redirect to dashboard after a short delay
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1500);
                 } else {
                     alert('Error saving resume: ' + data.error);
                 }
@@ -288,95 +266,6 @@
             .catch(error => {
                 console.error('Error:', error);
                 alert('Error saving resume: ' + error.message);
-            })
-            .finally(() => {
-                hideLoading();
-            });
-        }
-        
-        function changeStyle() {
-            const newStyle = document.getElementById('style-selector').value;
-            const resumeText = document.getElementById('edit-textarea').value;
-            
-            console.log('Changing style to:', newStyle);
-            showLoading();
-            
-            fetch('/change_style', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    resume_text: resumeText,
-                    style: newStyle
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('Style changed successfully');
-                } else {
-                    alert('Error changing style: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error changing style');
-            })
-            .finally(() => {
-                hideLoading();
-            });
-        }
-        
-        function downloadResume(format) {
-            const editTextarea = document.getElementById('edit-textarea');
-            const resumeText = editTextarea.value;
-            const style = document.getElementById('style-selector').value;
-            
-            if (!resumeText.trim()) {
-                alert('Resume content is empty. Cannot download.');
-                return;
-            }
-            
-            console.log(`Downloading resume as ${format}`);
-            showLoading();
-            
-            fetch('/download_resume', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    resume_text: resumeText,
-                    style: style,
-                    format: format
-                })
-            })
-            .then(response => {
-                if (response.ok) {
-                    return response.blob();
-                }
-                return response.json().then(data => {
-                    throw new Error(data.error || 'Download failed');
-                });
-            })
-            .then(blob => {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = `resume.${format}`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-                
-                showSuccessMessage(`Resume downloaded as ${format.toUpperCase()}`);
-                console.log(`Downloaded resume as ${format}`);
-            })
-            .catch(error => {
-                console.error('Download error:', error);
-                alert('Error downloading resume: ' + error.message);
             })
             .finally(() => {
                 hideLoading();

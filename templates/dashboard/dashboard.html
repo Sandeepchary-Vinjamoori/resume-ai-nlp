@@ -171,21 +171,6 @@
             overflow: hidden;
         }
 
-        .welcome-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.05), transparent);
-            transition: left 0.6s ease;
-        }
-
-        .welcome-section:hover::before {
-            left: 100%;
-        }
-
         .welcome-title {
             font-size: 36px;
             font-weight: 700;
@@ -242,8 +227,9 @@
 
         .resumes-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 32px;
+            cursor: default;
         }
 
         .resume-card {
@@ -252,27 +238,15 @@
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(102, 126, 234, 0.1);
             border-radius: 20px;
-            padding: 32px;
+            padding: 24px;
             transition: all 0.4s ease;
             cursor: pointer;
             position: relative;
-            overflow: hidden;
             box-shadow: 0 4px 20px rgba(102, 126, 234, 0.08);
-        }
-
-        .resume-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.05), transparent);
-            transition: left 0.6s ease;
-        }
-
-        .resume-card:hover::before {
-            left: 100%;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .resume-card:hover {
@@ -283,84 +257,148 @@
 
         .resume-header {
             display: flex;
-            align-items: flex-start;
-            gap: 16px;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
             margin-bottom: 24px;
+            flex: 1;
         }
 
         .resume-icon {
-            width: 48px;
-            height: 48px;
+            width: 56px;
+            height: 56px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             backdrop-filter: blur(10px);
-            border-radius: 12px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 20px;
+            font-size: 24px;
             flex-shrink: 0;
             border: 1px solid rgba(102, 126, 234, 0.2);
+            margin-bottom: 16px;
         }
 
         .resume-info {
-            flex: 1;
+            width: 100%;
         }
 
         .resume-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
             color: #1a202c;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+            word-wrap: break-word;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .resume-date {
-            font-size: 14px;
+            font-size: 13px;
             color: #64748b;
+            margin-bottom: 6px;
         }
 
         .resume-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+            flex-shrink: 0;
         }
 
         .action-btn {
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            gap: 6px;
             padding: 12px 16px;
-            background: rgba(102, 126, 234, 0.1);
+            background: rgba(102, 126, 234, 0.08);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.15);
             color: #667eea;
             text-decoration: none;
             border-radius: 10px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             cursor: pointer;
-            flex: 1;
-            justify-content: center;
+            min-height: 44px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .action-btn:hover {
-            background: rgba(102, 126, 234, 0.15);
-            border-color: rgba(102, 126, 234, 0.3);
-            transform: translateY(-2px);
+            background: rgba(102, 126, 234, 0.12);
+            border-color: rgba(102, 126, 234, 0.25);
+            transform: translateY(-1px);
             color: #5855eb;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
         }
 
         .action-btn.delete {
             color: #ef4444;
-            background: rgba(239, 68, 68, 0.1);
-            border-color: rgba(239, 68, 68, 0.2);
+            background: rgba(239, 68, 68, 0.08);
+            border-color: rgba(239, 68, 68, 0.15);
         }
 
         .action-btn.delete:hover {
-            background: rgba(239, 68, 68, 0.15);
-            border-color: rgba(239, 68, 68, 0.3);
+            background: rgba(239, 68, 68, 0.12);
+            border-color: rgba(239, 68, 68, 0.25);
             color: #dc2626;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+        }
+
+        /* Responsive button layout */
+        @media (max-width: 768px) {
+            .resumes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 24px;
+            }
+            
+            .resume-card {
+                min-height: 260px;
+                padding: 20px;
+            }
+            
+            .resume-actions {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .action-btn {
+                padding: 10px 12px;
+                font-size: 12px;
+                gap: 4px;
+                min-height: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .resumes-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .resume-card {
+                min-height: 240px;
+            }
+            
+            .resume-actions {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .action-btn {
+                padding: 10px 12px;
+                font-size: 12px;
+                min-height: 38px;
+            }
         }
 
         /* Empty State */
@@ -398,6 +436,442 @@
             display: none;
         }
 
+        /* Professional Modal System */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 500px;
+            animation: slideIn 0.3s ease-out;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .modal-icon.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .modal-icon.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .modal-icon.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a202c;
+            margin: 0;
+        }
+
+        .modal-body {
+            padding: 20px 24px;
+        }
+
+        .modal-message {
+            font-size: 16px;
+            color: #4b5563;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .modal-footer {
+            padding: 16px 24px 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            min-width: 100px;
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .modal-btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .modal-btn.danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .modal-btn.danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .modal-btn.secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .modal-btn.secondary:hover {
+            background: #e5e7eb;
+            transform: translateY(-1px);
+        }
+
+        /* Notification System */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .notification {
+            min-width: 300px;
+            max-width: 500px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-out;
+            font-weight: 500;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .notification-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+
+        .notification-close:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Resume Viewer Modal */
+        .resume-viewer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1002;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .resume-viewer-overlay.show {
+            display: flex;
+        }
+
+        .resume-viewer {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: hidden;
+            animation: slideIn 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .resume-viewer-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9fafb;
+        }
+
+        .resume-viewer-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a202c;
+            margin: 0;
+        }
+
+        .resume-viewer-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #ef4444;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .resume-viewer-close:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+        }
+
+        .resume-viewer-content {
+            padding: 32px;
+            overflow-y: auto;
+            flex: 1;
+            background: white;
+        }
+
+        .resume-display {
+            font-family: 'Times New Roman', serif;
+            line-height: 1.4;
+            color: #333;
+            max-width: 100%;
+        }
+
+        /* Resume Content Styling - Exact same as review page */
+        .resume-display * {
+            text-align: left !important;
+        }
+
+        .resume-display .name {
+            text-align: center !important; 
+            color: #000 !important; 
+            font-weight: bold !important; 
+            font-size: 18pt !important; 
+            margin: 0 0 8px 0 !important; 
+        }
+
+        .resume-display .contact {
+            text-align: center !important; 
+            color: #333 !important; 
+            margin: 0 0 16px 0 !important; 
+        }
+
+        .resume-display .section { 
+            color: #2d8659 !important; 
+            font-weight: bold !important; 
+            border-bottom: 1px solid #2d8659 !important; 
+            margin: 16px 0 8px 0 !important; 
+            padding-bottom: 2px !important; 
+            font-size: 12pt !important; 
+            text-align: left !important;
+        }
+
+        .resume-display .content { 
+            text-align: left !important; 
+            color: #333 !important; 
+            margin: 2px 0 !important; 
+            padding-left: 0 !important;
+            display: block !important;
+            width: 100% !important;
+        }
+
+        .resume-display .bullet { 
+            text-align: left !important; 
+            color: #333 !important; 
+            margin: 2px 0 2px 16px !important; 
+            display: block !important;
+        }
+
+        .resume-display .empty-line {
+            height: 2px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* Extra specific rules to force left alignment for education content */
+        .resume-display div:not(.name):not(.contact) {
+            text-align: left !important;
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+        }
+
+        /* Ensure all text content is left-aligned */
+        .resume-display p,
+        .resume-display span,
+        .resume-display div {
+            text-align: left !important;
+        }
+
+        /* Override any center alignment that might be inherited */
+        .resume-display [style*="text-align: center"] {
+            text-align: left !important;
+        }
+
+        /* NUCLEAR EDUCATION ALIGNMENT FIX */
+        .resume-display div:not(.name):not(.contact):not(.section):not(.bullet) {
+            text-align: left !important;
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+            line-height: 1.4 !important;
+            margin: 1px 0 !important;
+        }
+
+        /* Force ALL education content left - no exceptions */
+        .resume-display .content {
+            text-align: left !important;
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+            display: block !important;
+            width: 100% !important;
+            line-height: 1.4 !important;
+            margin: 1px 0 !important;
+        }
+
+        /* Override any possible center alignment */
+        .resume-display div[style*="center"]:not(.name):not(.contact),
+        .resume-display div[align="center"]:not(.name):not(.contact) {
+            text-align: left !important;
+            margin-left: 0 !important;
+        }
+
+        /* NUCLEAR EDUCATION FIX - Target university/college content specifically */
+        .resume-display div:contains("University"):not(.name):not(.contact),
+        .resume-display div:contains("College"):not(.name):not(.contact),
+        .resume-display div:contains("Anurag"):not(.name):not(.contact),
+        .resume-display div:contains("XYZ"):not(.name):not(.contact),
+        .resume-display div:contains("GPA"):not(.name):not(.contact),
+        .resume-display div:contains("Bachelor"):not(.name):not(.contact),
+        .resume-display div:contains("Master"):not(.name):not(.contact),
+        .resume-display div:contains("Intermediate"):not(.name):not(.contact) {
+            text-align: left !important;
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+            display: block !important;
+            width: 100% !important;
+        }
+
+        /* ULTRA NUCLEAR - Override ANY inline styles for education */
+        .resume-display [style*="text-align: center"]:not(.name):not(.contact) {
+            text-align: left !important;
+        }
+
+        .resume-display [style*="margin: auto"]:not(.name):not(.contact) {
+            margin-left: 0 !important;
+            margin-right: auto !important;
+        }
+
+        /* Force specific education patterns to be left */
+        .resume-display div[class="content"] {
+            text-align: left !important;
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .resume-viewer {
+                width: 95%;
+                max-height: 95vh;
+            }
+            
+            .resume-viewer-content {
+                padding: 20px;
+            }
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .main-content {
@@ -423,14 +897,6 @@
 
             .header {
                 padding: 16px 20px;
-            }
-
-            .resume-actions {
-                flex-direction: column;
-            }
-
-            .action-btn {
-                flex: none;
             }
         }
     </style>
@@ -495,6 +961,9 @@
                             </div>
                         </div>
                         <div class="resume-actions">
+                            <button onclick="viewResume('{{ resume.id }}', '{{ resume.title }}')" class="action-btn">
+                                👁️ View
+                            </button>
                             <a href="{{ url_for('edit_resume', resume_id=resume.id) }}" class="action-btn">
                                 ✏️ Edit
                             </a>
@@ -518,6 +987,43 @@
                     </a>
                 </div>
             {% endif %}
+        </div>
+    </div>
+
+    <!-- Professional Modal System -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div id="modal-icon" class="modal-icon">
+                    <span id="modal-icon-text">⚠️</span>
+                </div>
+                <h3 id="modal-title" class="modal-title">Confirm Action</h3>
+            </div>
+            <div class="modal-body">
+                <p id="modal-message" class="modal-message">Are you sure you want to proceed?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-cancel" class="modal-btn secondary">Cancel</button>
+                <button id="modal-confirm" class="modal-btn danger">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container" class="notification-container"></div>
+
+    <!-- Resume Viewer Modal -->
+    <div id="resume-viewer-overlay" class="resume-viewer-overlay">
+        <div class="resume-viewer">
+            <div class="resume-viewer-header">
+                <h3 id="resume-viewer-title" class="resume-viewer-title">Resume Preview</h3>
+                <button id="resume-viewer-close" class="resume-viewer-close">×</button>
+            </div>
+            <div class="resume-viewer-content">
+                <div id="resume-viewer-display" class="resume-display">
+                    <!-- Resume content will be loaded here -->
+                </div>
+            </div>
         </div>
     </div>
 
@@ -554,25 +1060,288 @@
         });
 
         function deleteResume(resumeId, title) {
-            if (confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) {
-                fetch(`/delete_resume/${resumeId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                })
+            showConfirmModal(
+                'Delete Resume',
+                `Are you sure you want to delete "${title}"? This action cannot be undone.`,
+                'warning',
+                function() {
+                    // Confirmed - proceed with deletion
+                    fetch(`/delete_resume/${resumeId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showNotification('Resume deleted successfully', 'success');
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1500);
+                        } else {
+                            showNotification('Error: ' + data.error, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        showNotification('Error deleting resume', 'error');
+                    });
+                }
+            );
+        }
+
+        // Professional Modal System
+        function showConfirmModal(title, message, type = 'warning', onConfirm = null, onCancel = null) {
+            const overlay = document.getElementById('modal-overlay');
+            const modalTitle = document.getElementById('modal-title');
+            const modalMessage = document.getElementById('modal-message');
+            const modalIcon = document.getElementById('modal-icon');
+            const modalIconText = document.getElementById('modal-icon-text');
+            const confirmBtn = document.getElementById('modal-confirm');
+            const cancelBtn = document.getElementById('modal-cancel');
+
+            // Set content
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+
+            // Set icon and styling based on type
+            modalIcon.className = `modal-icon ${type}`;
+            if (type === 'warning') {
+                modalIconText.textContent = '⚠️';
+                confirmBtn.className = 'modal-btn danger';
+                confirmBtn.textContent = 'Delete';
+            } else if (type === 'success') {
+                modalIconText.textContent = '✅';
+                confirmBtn.className = 'modal-btn primary';
+                confirmBtn.textContent = 'OK';
+            } else if (type === 'error') {
+                modalIconText.textContent = '❌';
+                confirmBtn.className = 'modal-btn primary';
+                confirmBtn.textContent = 'OK';
+            }
+
+            // Show modal
+            overlay.classList.add('show');
+
+            // Handle confirm
+            const handleConfirm = function() {
+                hideModal();
+                if (onConfirm) onConfirm();
+            };
+
+            // Handle cancel
+            const handleCancel = function() {
+                hideModal();
+                if (onCancel) onCancel();
+            };
+
+            // Remove existing listeners
+            confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+            cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+
+            // Add new listeners
+            document.getElementById('modal-confirm').addEventListener('click', handleConfirm);
+            document.getElementById('modal-cancel').addEventListener('click', handleCancel);
+
+            // Close on overlay click
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    handleCancel();
+                }
+            });
+
+            // Close on Escape key
+            const handleEscape = function(e) {
+                if (e.key === 'Escape') {
+                    handleCancel();
+                    document.removeEventListener('keydown', handleEscape);
+                }
+            };
+            document.addEventListener('keydown', handleEscape);
+        }
+
+        function hideModal() {
+            const overlay = document.getElementById('modal-overlay');
+            overlay.classList.remove('show');
+        }
+
+        // Notification System
+        function showNotification(message, type = 'success', duration = 4000) {
+            const container = document.getElementById('notification-container');
+            if (!container) return;
+
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+
+            // Set icon based on type
+            let icon = '✅';
+            if (type === 'error') icon = '❌';
+            if (type === 'info') icon = 'ℹ️';
+            if (type === 'warning') icon = '⚠️';
+
+            notification.innerHTML = `
+                <div class="notification-icon">${icon}</div>
+                <div class="notification-content">${message}</div>
+                <button class="notification-close" onclick="hideNotification(this.parentElement)">×</button>
+            `;
+
+            // Add to container
+            container.appendChild(notification);
+
+            // Trigger animation
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+
+            // Auto-hide after duration
+            setTimeout(() => {
+                hideNotification(notification);
+            }, duration);
+
+            return notification;
+        }
+
+        function hideNotification(notification) {
+            if (!notification) return;
+
+            notification.classList.remove('show');
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.parentElement.removeChild(notification);
+                }
+            }, 300);
+        }
+
+        // Resume Viewer Functions
+        function viewResume(resumeId, title) {
+            const overlay = document.getElementById('resume-viewer-overlay');
+            const titleElement = document.getElementById('resume-viewer-title');
+            const contentElement = document.getElementById('resume-viewer-display');
+            const closeBtn = document.getElementById('resume-viewer-close');
+
+            // Set title
+            titleElement.textContent = title;
+
+            // Show loading state
+            contentElement.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #666;">
+                    <div style="font-size: 24px; margin-bottom: 16px;">⏳</div>
+                    <p>Loading resume...</p>
+                </div>
+            `;
+
+            // Show modal
+            overlay.classList.add('show');
+
+            // Fetch resume content
+            fetch(`/get_resume_content/${resumeId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        location.reload();
+                        // Use the pre-formatted HTML from backend
+                        contentElement.innerHTML = data.formatted_html;
+                        
+                        // Force left alignment for education content
+                        setTimeout(() => {
+                            forceEducationLeftAlignment();
+                        }, 100);
                     } else {
-                        alert('Error: ' + data.error);
+                        contentElement.innerHTML = `
+                            <div style="text-align: center; padding: 40px; color: #ef4444;">
+                                <div style="font-size: 24px; margin-bottom: 16px;">❌</div>
+                                <p>Error loading resume: ${data.error || 'Unknown error'}</p>
+                            </div>
+                        `;
                     }
                 })
                 .catch(error => {
-                    alert('Error deleting resume');
+                    console.error('Error fetching resume:', error);
+                    contentElement.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #ef4444;">
+                            <div style="font-size: 24px; margin-bottom: 16px;">❌</div>
+                            <p>Error loading resume: ${error.message}</p>
+                        </div>
+                    `;
                 });
-            }
+
+            // Close button functionality
+            closeBtn.onclick = hideResumeViewer;
+
+            // Close on overlay click
+            overlay.onclick = function(e) {
+                if (e.target === overlay) {
+                    hideResumeViewer();
+                }
+            };
+
+            // Close on Escape key
+            const handleEscape = function(e) {
+                if (e.key === 'Escape') {
+                    hideResumeViewer();
+                    document.removeEventListener('keydown', handleEscape);
+                }
+            };
+            document.addEventListener('keydown', handleEscape);
+        }
+
+        function hideResumeViewer() {
+            const overlay = document.getElementById('resume-viewer-overlay');
+            overlay.classList.remove('show');
+        }
+
+        function forceEducationLeftAlignment() {
+            console.log('🎓 Forcing education left alignment in viewer...');
+            
+            const resumeDisplay = document.getElementById('resume-viewer-display');
+            if (!resumeDisplay) return;
+            
+            // Find all divs in the resume display
+            const allDivs = resumeDisplay.querySelectorAll('div');
+            
+            allDivs.forEach(div => {
+                const text = div.textContent.trim();
+                
+                // Skip headers and special elements
+                if (div.classList.contains('name') || 
+                    div.classList.contains('contact') || 
+                    div.classList.contains('section')) {
+                    return;
+                }
+                
+                // Force left alignment for education content
+                if (text.includes('University') || text.includes('College') || 
+                    text.includes('Institute') || text.includes('School') ||
+                    text.includes('Anurag') || text.includes('XYZ') ||
+                    text.includes('GPA') || text.includes('Bachelor') ||
+                    text.includes('Master') || text.includes('Intermediate') ||
+                    text.includes('Degree') || text.includes('Engineering') ||
+                    text.includes('Science') || text.includes('Technology')) {
+                    
+                    // FORCE left alignment
+                    div.style.textAlign = 'left';
+                    div.style.marginLeft = '0';
+                    div.style.paddingLeft = '0';
+                    div.style.setProperty('text-align', 'left', 'important');
+                    div.style.setProperty('margin-left', '0', 'important');
+                    div.style.setProperty('padding-left', '0', 'important');
+                    
+                    console.log('🎯 FORCED LEFT:', text.substring(0, 50));
+                }
+            });
+            
+            // Also target by class
+            const contentDivs = resumeDisplay.querySelectorAll('.content');
+            contentDivs.forEach(div => {
+                div.style.textAlign = 'left';
+                div.style.marginLeft = '0';
+                div.style.paddingLeft = '0';
+                div.style.setProperty('text-align', 'left', 'important');
+                div.style.setProperty('margin-left', '0', 'important');
+                div.style.setProperty('padding-left', '0', 'important');
+            });
+            
+            console.log('✅ Education alignment fix complete');
         }
     </script>
 </body>
