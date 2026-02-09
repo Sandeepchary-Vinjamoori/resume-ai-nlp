@@ -89,7 +89,12 @@ def create_simple_pdf(resume_text, filepath):
             'experience', 'professional experience', 'work experience',
             'projects', 'key projects', 'notable projects',
             'certifications', 'certificates', 'awards',
-            'achievements', 'accomplishments'
+            'achievements', 'accomplishments', 'languages',
+            'volunteer', 'volunteer work', 'volunteering',
+            'publications', 'research', 'papers',
+            'hobbies', 'interests', 'activities',
+            'memberships', 'professional memberships',
+            'leadership', 'honors', 'recognition'
         ]
         
         logger.info(f"Processing {len(lines)} lines for PDF")
@@ -110,13 +115,15 @@ def create_simple_pdf(resume_text, filepath):
                 story.append(Paragraph(line, name_style))
                 logger.info(f"✅ NAME (centered): {line[:30]}")
                 
-            # Contact info (CENTERED) - but NOT if it contains University/College
-            elif ('|' in line_stripped or '@' in line_stripped or any(c.isdigit() for c in line_stripped)) and not any(inst in line_stripped for inst in ['University', 'College', 'Institute', 'School']):
+            # Contact info (CENTERED) - but NOT if it contains University/College/dates/job titles
+            elif ('|' in line_stripped or '@' in line_stripped or any(c.isdigit() for c in line_stripped)) and not any(inst in line_stripped for inst in ['University', 'College', 'Institute', 'School', 'GPA', 'Bachelor', 'Master', 'Degree', 'Engineering', 'Science', 'Technology', 'Arts', 'Commerce', 'Management', 'Intermediate', 'Junior', 'Senior', 'Intern', 'Developer', 'Engineer', 'Manager', 'Analyst', 'Consultant', 'Specialist', 'Coordinator', 'Assistant', 'Associate', 'Director', 'Lead', 'Principal', 'Staff', '2020', '2021', '2022', '2023', '2024', '2025', '2026']) and i <= 2:
                 story.append(Paragraph(line, contact_style))
                 logger.info(f"✅ CONTACT (centered): {line[:30]}")
                 
-            # Section headers (LEFT + GREEN UNDERLINE)
-            elif any(header in line_stripped.lower() for header in section_headers):
+            # Section headers (LEFT + GREEN UNDERLINE) - must be exact match or start of line
+            elif (line_stripped.lower() in section_headers or 
+                  any(line_stripped.lower().startswith(header) and len(line_stripped.split()) <= 3 for header in section_headers) or
+                  (line_stripped.isupper() and len(line_stripped.split()) <= 3 and len(line_stripped) < 30 and line_stripped.isalpha())):
                 # Add the section header with green text
                 story.append(Paragraph(line, header_style))
                 
