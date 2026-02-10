@@ -314,7 +314,7 @@
         </form>
 
         <div class="auth-links">
-            <p>Already have an account? <a href="{{ url_for('auth.signin') }}">Sign In</a></p>
+            <p>Already have an account? <a href="{{ url_for('auth.signin', next=request.args.get('next')) }}">Sign In</a></p>
         </div>
     </div>
 

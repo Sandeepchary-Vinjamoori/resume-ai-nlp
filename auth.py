@@ -84,6 +84,11 @@ def signup():
                         # Log in the user
                         login_user(user)
                         flash(f'Welcome {name}! Your account has been created successfully.', 'success')
+                        
+                        # Check for next parameter to redirect back to where user came from
+                        next_page = request.args.get('next')
+                        if next_page:
+                            return redirect(next_page)
                         return redirect(url_for('dashboard.dashboard'))
                     else:
                         flash('Failed to create account. Please try again.', 'error')
@@ -104,6 +109,11 @@ def signup():
                     # Log in the user
                     login_user(user)
                     flash(f'Welcome {name}! Your account has been created successfully.', 'success')
+                    
+                    # Check for next parameter to redirect back to where user came from
+                    next_page = request.args.get('next')
+                    if next_page:
+                        return redirect(next_page)
                     return redirect(url_for('dashboard.dashboard'))
             else:
                 # Fallback to local authentication
@@ -120,6 +130,11 @@ def signup():
                 # Log in the user
                 login_user(user)
                 flash(f'Welcome {name}! Your account has been created successfully.', 'success')
+                
+                # Check for next parameter to redirect back to where user came from
+                next_page = request.args.get('next')
+                if next_page:
+                    return redirect(next_page)
                 return redirect(url_for('dashboard.dashboard'))
                 
         except Exception as e:

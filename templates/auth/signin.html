@@ -279,7 +279,7 @@
         </form>
 
         <div class="auth-links">
-            <p>Don't have an account? <a href="{{ url_for('auth.signup') }}">Sign Up</a></p>
+            <p>Don't have an account? <a href="{{ url_for('auth.signup', next=request.args.get('next')) }}">Sign Up</a></p>
         </div>
     </div>
 </body>

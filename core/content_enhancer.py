@@ -428,38 +428,94 @@ class ContentEnhancer:
         return cleaned_skills
     
     def _categorize_skills(self, skills: List[str]) -> Dict[str, List[str]]:
-        """Categorize skills for better ATS parsing"""
+        """Categorize skills for better ATS parsing with precise classification"""
         categories = {
             "Programming Languages": [],
             "Frameworks & Libraries": [],
             "Databases": [],
             "Cloud & DevOps": [],
-            "Tools & Platforms": []
+            "Tools & Platforms": [],
+            "Soft Skills": []
         }
         
-        # Categorization mappings
-        programming_langs = ['python', 'javascript', 'java', 'c++', 'c#', 'php', 'ruby', 'go', 'typescript']
-        frameworks = ['react', 'angular', 'vue', 'node.js', 'django', 'flask', 'spring', 'express']
-        databases = ['sql', 'mysql', 'postgresql', 'mongodb', 'redis', 'oracle', 'sqlite']
-        cloud_devops = ['aws', 'azure', 'gcp', 'docker', 'kubernetes', 'jenkins', 'terraform']
-        tools = ['git', 'github', 'jira', 'postman', 'figma', 'photoshop']
+        # Precise categorization mappings
+        programming_langs = {
+            'python', 'javascript', 'java', 'c++', 'c#', 'php', 'ruby', 'go', 'rust',
+            'typescript', 'swift', 'kotlin', 'scala', 'r', 'matlab', 'perl', 'shell',
+            'bash', 'c', 'objective-c', 'dart', 'lua', 'haskell', 'clojure', 'erlang'
+        }
+        
+        frameworks = {
+            'react', 'angular', 'vue', 'vue.js', 'node.js', 'django', 'flask', 'spring',
+            'express', 'laravel', 'rails', 'asp.net', 'jquery', 'bootstrap', 'tailwind',
+            'next.js', 'nuxt.js', 'gatsby', 'svelte', 'ember.js', 'fastapi', 'tornado'
+        }
+        
+        databases = {
+            'sql', 'mysql', 'postgresql', 'mongodb', 'redis', 'oracle', 'sqlite',
+            'cassandra', 'dynamodb', 'neo4j', 'influxdb', 'couchdb', 'mariadb',
+            'firestore', 'cosmos db', 'aurora', 'bigquery', 'snowflake', 'redshift',
+            'elasticsearch', 'solr', 'memcached'
+        }
+        
+        cloud_devops = {
+            'aws', 'azure', 'gcp', 'google cloud', 'docker', 'kubernetes', 'jenkins',
+            'terraform', 'ansible', 'chef', 'puppet', 'vagrant', 'nginx', 'apache',
+            'gitlab ci', 'github actions', 'circleci', 'travis ci', 'helm', 'istio'
+        }
+        
+        tools_platforms = {
+            'git', 'github', 'gitlab', 'bitbucket', 'jira', 'confluence', 'slack',
+            'trello', 'asana', 'postman', 'insomnia', 'swagger', 'figma', 'sketch',
+            'photoshop', 'illustrator', 'vs code', 'intellij', 'eclipse', 'tableau',
+            'power bi', 'jupyter', 'anaconda'
+        }
+        
+        soft_skills = {
+            'communication', 'leadership', 'teamwork', 'problem solving', 'analytical thinking',
+            'critical thinking', 'creativity', 'adaptability', 'time management',
+            'project management', 'collaboration', 'presentation', 'negotiation',
+            'mentoring', 'coaching', 'strategic thinking', 'decision making',
+            'conflict resolution', 'emotional intelligence', 'customer service',
+            'public speaking', 'writing', 'research', 'organization', 'multitasking'
+        }
         
         for skill in skills:
-            skill_lower = skill.lower()
+            skill_lower = skill.lower().strip()
+            categorized = False
             
-            if any(lang in skill_lower for lang in programming_langs):
+            # Check exact matches first for precision
+            if skill_lower in programming_langs:
                 categories["Programming Languages"].append(skill)
-            elif any(fw in skill_lower for fw in frameworks):
-                categories["Frameworks & Libraries"].append(skill)
-            elif any(db in skill_lower for db in databases):
+                categorized = True
+            elif skill_lower in databases:
                 categories["Databases"].append(skill)
-            elif any(cd in skill_lower for cd in cloud_devops):
+                categorized = True
+            elif skill_lower in frameworks:
+                categories["Frameworks & Libraries"].append(skill)
+                categorized = True
+            elif skill_lower in cloud_devops:
                 categories["Cloud & DevOps"].append(skill)
-            elif any(tool in skill_lower for tool in tools):
+                categorized = True
+            elif skill_lower in soft_skills:
+                categories["Soft Skills"].append(skill)
+                categorized = True
+            elif skill_lower in tools_platforms:
                 categories["Tools & Platforms"].append(skill)
+                categorized = True
             else:
-                # Default to Tools & Platforms
-                categories["Tools & Platforms"].append(skill)
+                # Check partial matches for compound skills
+                if any(db in skill_lower for db in ['mongo', 'mysql', 'postgres', 'redis', 'oracle']):
+                    categories["Databases"].append(skill)
+                elif any(lang in skill_lower for lang in ['python', 'java', 'javascript', 'typescript']):
+                    categories["Programming Languages"].append(skill)
+                elif any(soft in skill_lower for soft in ['communication', 'leadership', 'teamwork', 'management']):
+                    categories["Soft Skills"].append(skill)
+                elif any(fw in skill_lower for fw in ['react', 'angular', 'django', 'flask', 'spring']):
+                    categories["Frameworks & Libraries"].append(skill)
+                else:
+                    # Default to Tools & Platforms
+                    categories["Tools & Platforms"].append(skill)
         
         # Remove empty categories
         return {k: v for k, v in categories.items() if v}

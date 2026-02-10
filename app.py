@@ -57,6 +57,12 @@ with app.app_context():
     db.create_all()
 
 
+@app.route("/health")
+def health_check():
+    """Health check endpoint for Railway"""
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
+
 @app.route("/")
 def landing():
     """Landing page"""
@@ -503,7 +509,7 @@ def save_temp_resume_after_auth():
         session.pop('temp_resume', None)
         
         flash(f'Resume "{title}" saved successfully!', 'success')
-        return redirect(url_for('dashboard.dashboard'))
+        return redirect(url_for('review'))
         
     except Exception as e:
         logger.error(f"Error saving temp resume after auth: {e}")
@@ -953,7 +959,7 @@ def create_education_string(education_entries):
 
 
 def create_experience_string(experience_entries):
-    """Create backward compatibility experience string"""
+    """Create backward compatibility experience string with proper date handling"""
     if not experience_entries:
         return ""
     
@@ -967,8 +973,20 @@ def create_experience_string(experience_entries):
         elif exp.get('company'):
             entry_parts.append(exp['company'])
         
+        # Fix: Handle all date scenarios properly
         if exp.get('start') and exp.get('end'):
-            entry_parts.append(f"({exp['start']} - {exp['end']})")
+            # Handle "Present" case and regular end dates
+            end_date = exp['end'].strip()
+            if end_date.lower() in ['present', 'current', 'ongoing']:
+                entry_parts.append(f"({exp['start']} - Present)")
+            else:
+                entry_parts.append(f"({exp['start']} - {end_date})")
+        elif exp.get('start'):
+            # Only start date provided, assume current role
+            entry_parts.append(f"({exp['start']} - Present)")
+        elif exp.get('end'):
+            # Only end date provided
+            entry_parts.append(f"({exp['end']})")
         
         if exp.get('responsibilities'):
             entry_parts.append(f": {exp['responsibilities']}")

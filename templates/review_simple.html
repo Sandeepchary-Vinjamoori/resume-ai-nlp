@@ -473,7 +473,6 @@
             <button id="download-pdf" class="btn btn-primary">📄 Download PDF</button>
             <button id="download-docx" class="btn btn-primary">📝 Download DOCX</button>
 
-            <button id="regenerate-btn" class="btn btn-secondary">🔄 Regenerate</button>
             <button id="start-over-btn" class="btn btn-secondary">🏠 Start Over</button>
         </div>
     </div>
@@ -706,6 +705,19 @@
                 resumeContent: !!resumeContent
             });
 
+            // Check for download buttons
+            const downloadPdfBtn = document.getElementById('download-pdf');
+            const downloadDocxBtn = document.getElementById('download-docx');
+            const startOverBtn = document.getElementById('start-over-btn');
+            const saveResumeBtn = document.getElementById('save-resume-btn');
+
+            console.log('Control buttons found:', {
+                downloadPdfBtn: !!downloadPdfBtn,
+                downloadDocxBtn: !!downloadDocxBtn,
+                startOverBtn: !!startOverBtn,
+                saveResumeBtn: !!saveResumeBtn
+            });
+
             if (editTextarea) {
                 originalContent = editTextarea.value;
                 console.log('Original content length:', originalContent.length);
@@ -748,32 +760,56 @@
                     console.log('Save button clicked');
                     const updatedContent = editTextarea ? editTextarea.value : '';
                     if (!updatedContent.trim()) {
-                        alert('Resume content cannot be empty.');
+                        showNotification('Resume content cannot be empty.', 'warning');
                         return;
                     }
 
                     console.log('Sending update request...');
+
+                    // Show loading state
+                    if (saveBtn) {
+                        saveBtn.disabled = true;
+                        saveBtn.textContent = '💾 Saving...';
+                    }
+
+                    // Get style safely
+                    const styleSelector = document.getElementById('style-selector');
+                    const currentStyle = styleSelector ? styleSelector.value : '{{ style }}';
+
+                    console.log('Current style:', currentStyle);
+                    console.log('Content length:', updatedContent.length);
+
                     fetch('/update_resume', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             resume_text: updatedContent,
-                            style: document.getElementById('style-selector').value
+                            style: currentStyle
                         })
                     })
                         .then(response => {
-                            console.log('Update response received:', response.status);
+                            console.log('Update response received:', response.status, response.statusText);
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
                             return response.json();
                         })
                         .then(data => {
                             console.log('Update response data:', data);
+
+                            // Always reset button state first
+                            if (saveBtn) {
+                                saveBtn.disabled = false;
+                                saveBtn.textContent = '💾 Save Changes';
+                            }
+
                             if (data.success) {
                                 // Update the resume content with the returned HTML
                                 if (data.resume_html && resumeContent) {
                                     resumeContent.innerHTML = data.resume_html;
                                 }
 
-                                // Switch back to view mode
+                                // Switch back to view mode immediately
                                 if (resumeContent) resumeContent.style.display = 'block';
                                 if (editTextarea) editTextarea.style.display = 'none';
                                 if (editBtn) editBtn.style.display = 'block';
@@ -784,6 +820,9 @@
                                 // Update original content for future cancels
                                 originalContent = editTextarea ? editTextarea.value : '';
 
+                                // Show success notification
+                                showNotification('Resume saved successfully!', 'success');
+
                                 // Make institutions dark after save
                                 setTimeout(makeInstitutionsDark, 100);
                                 setTimeout(makeInstitutionsDark, 300);
@@ -792,14 +831,21 @@
                                 setTimeout(forceUniversityLeft, 150);
                                 setTimeout(forceUniversityLeft, 400);
 
-                                console.log('Resume updated successfully without page reload');
+                                console.log('Successfully exited edit mode');
                             } else {
-                                alert('Error: ' + data.error);
+                                showNotification('Error: ' + (data.error || 'Unknown error'), 'error');
+                                console.error('Save failed:', data.error);
                             }
                         })
                         .catch(error => {
                             console.error('Update error:', error);
-                            alert('Error: ' + error.message);
+                            showNotification('Error saving resume: ' + error.message, 'error');
+
+                            // Always reset button state on error
+                            if (saveBtn) {
+                                saveBtn.disabled = false;
+                                saveBtn.textContent = '💾 Save Changes';
+                            }
                         });
                 });
             } else {
@@ -821,15 +867,15 @@
                 console.error('Cancel button not found!');
             }
 
-            // Download functionality
-            const downloadPdfBtn = document.getElementById('download-pdf');
-            const downloadDocxBtn = document.getElementById('download-docx');
-
+            // Download functionality - moved inside DOMContentLoaded
             if (downloadPdfBtn) {
                 downloadPdfBtn.addEventListener('click', function () {
                     console.log('Download PDF clicked');
                     downloadResume('pdf');
                 });
+                console.log('PDF download button initialized');
+            } else {
+                console.error('PDF download button not found!');
             }
 
             if (downloadDocxBtn) {
@@ -837,39 +883,24 @@
                     console.log('Download DOCX clicked');
                     downloadResume('docx');
                 });
+                console.log('DOCX download button initialized');
+            } else {
+                console.error('DOCX download button not found!');
             }
 
-            const regenerateBtn = document.getElementById('regenerate-btn');
-            if (regenerateBtn) {
-                regenerateBtn.addEventListener('click', function () {
-                    console.log('Regenerate clicked');
-                    if (confirm('Regenerate resume?')) {
-                        fetch('/regenerate_resume', { method: 'POST' })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) location.reload();
-                                else alert('Error: ' + data.error);
-                            })
-                            .catch(error => {
-                                console.error('Regenerate error:', error);
-                                alert('Error: ' + error.message);
-                            });
-                    }
-                });
-            }
-
-            const startOverBtn = document.getElementById('start-over-btn');
             if (startOverBtn) {
                 startOverBtn.addEventListener('click', function () {
                     console.log('Start over clicked');
-                    if (confirm('Start over?')) {
+                    showConfirmDialog('Start over?', 'This will take you back to the beginning and you may lose your current progress.', function () {
                         window.location.href = '/';
-                    }
+                    });
                 });
+                console.log('Start over button initialized');
+            } else {
+                console.error('Start over button not found!');
             }
 
-            // Save Resume functionality
-            const saveResumeBtn = document.getElementById('save-resume-btn');
+            // Save Resume functionality - moved inside DOMContentLoaded
             const saveModal = document.getElementById('save-resume-modal');
             const closeModal = document.getElementById('close-modal');
             const cancelSave = document.getElementById('cancel-save');
@@ -881,6 +912,9 @@
                     console.log('Save resume clicked');
                     showSaveModal();
                 });
+                console.log('Save resume button initialized');
+            } else {
+                console.error('Save resume button not found!');
             }
 
             if (closeModal) {
@@ -994,7 +1028,7 @@
                     } else {
                         // Handle authentication required
                         if (data.error && data.error.includes('login')) {
-                            if (confirm('You need to sign in to save resumes. Would you like to sign in now?')) {
+                            showConfirmDialog('Sign in required', 'You need to sign in to save resumes. Would you like to sign in now?', function () {
                                 // Store current resume in session for after login
                                 fetch('/store_temp_resume', {
                                     method: 'POST',
@@ -1021,7 +1055,7 @@
                                         console.error('Error storing temp resume:', error);
                                         window.location.href = '/auth/signin';
                                     });
-                            }
+                            });
                         } else {
                             showNotification('Error: ' + (data.error || 'Failed to save resume'), 'error');
                         }
@@ -1089,6 +1123,92 @@
         function hideAllNotifications() {
             const notifications = document.querySelectorAll('.notification');
             notifications.forEach(hideNotification);
+        }
+
+        function showConfirmDialog(title, message, onConfirm) {
+            // Create modal overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+
+            // Create modal
+            const modal = document.createElement('div');
+            modal.className = 'confirm-modal';
+            modal.style.cssText = `
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                width: 90%;
+                max-width: 400px;
+                overflow: hidden;
+            `;
+
+            modal.innerHTML = `
+                <div style="padding: 24px 24px 16px; border-bottom: 1px solid #e5e7eb;">
+                    <h3 style="margin: 0; font-size: 18px; font-weight: 600; color: #1a202c;">${title}</h3>
+                </div>
+                <div style="padding: 20px 24px;">
+                    <p style="margin: 0; font-size: 14px; color: #4b5563; line-height: 1.5;">${message}</p>
+                </div>
+                <div style="padding: 16px 24px 24px; display: flex; gap: 12px; justify-content: flex-end;">
+                    <button class="cancel-btn" style="
+                        padding: 8px 16px;
+                        border-radius: 6px;
+                        font-size: 14px;
+                        font-weight: 500;
+                        cursor: pointer;
+                        border: 1px solid #d1d5db;
+                        background: #f3f4f6;
+                        color: #374151;
+                        transition: all 0.2s ease;
+                    ">Cancel</button>
+                    <button class="confirm-btn" style="
+                        padding: 8px 16px;
+                        border-radius: 6px;
+                        font-size: 14px;
+                        font-weight: 500;
+                        cursor: pointer;
+                        border: none;
+                        background: linear-gradient(135deg, #667eea, #764ba2);
+                        color: white;
+                        transition: all 0.2s ease;
+                    ">Confirm</button>
+                </div>
+            `;
+
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+
+            // Add event listeners
+            const cancelBtn = modal.querySelector('.cancel-btn');
+            const confirmBtn = modal.querySelector('.confirm-btn');
+
+            function closeModal() {
+                document.body.removeChild(overlay);
+            }
+
+            cancelBtn.addEventListener('click', closeModal);
+            confirmBtn.addEventListener('click', function () {
+                closeModal();
+                if (onConfirm) onConfirm();
+            });
+
+            // Close on overlay click
+            overlay.addEventListener('click', function (e) {
+                if (e.target === overlay) closeModal();
+            });
         }
 
         function downloadResume(format) {

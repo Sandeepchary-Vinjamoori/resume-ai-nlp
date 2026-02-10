@@ -16,21 +16,22 @@ class Config:
     SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
     SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_KEY')
     
-    # Database settings (PostgreSQL via Supabase)
+    # Database settings - Railway PostgreSQL
     DATABASE_URL = os.environ.get('DATABASE_URL')
     if DATABASE_URL and DATABASE_URL.startswith('postgres://'):
         DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
     
-    # Use Supabase PostgreSQL if available, otherwise SQLite
+    # Use Railway PostgreSQL if available, otherwise SQLite for local dev
     if DATABASE_URL:
         SQLALCHEMY_DATABASE_URI = DATABASE_URL
+        print("✅ Using Railway PostgreSQL database")
     elif SUPABASE_URL:
         # For now, use SQLite until we get the proper PostgreSQL connection string
-        # You'll need to add DATABASE_URL to your .env file from Supabase dashboard
         SQLALCHEMY_DATABASE_URI = 'sqlite:///resume_ai.db'
         print("⚠️  Using SQLite fallback. Add DATABASE_URL to .env for Supabase PostgreSQL")
     else:
         SQLALCHEMY_DATABASE_URI = 'sqlite:///resume_ai.db'
+        print("🔧 Using SQLite for local development")
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     

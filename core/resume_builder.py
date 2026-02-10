@@ -391,9 +391,13 @@ def _build_experience_section(data: Dict[str, Any], enhancer) -> str:
             section_parts.append(job_header)
             logger.info(f"Added job header: {job_header}")
         
-        # Dates on separate line
+        # Dates on separate line with proper Present handling
         if entry.get('start') and entry.get('end'):
-            section_parts.append(f"{entry['start']} - {entry['end']}")
+            end_date = entry['end'].strip()
+            if end_date.lower() in ['present', 'current', 'ongoing']:
+                section_parts.append(f"{entry['start']} - Present")
+            else:
+                section_parts.append(f"{entry['start']} - {end_date}")
         elif entry.get('start'):
             section_parts.append(f"{entry['start']} - Present")
         
