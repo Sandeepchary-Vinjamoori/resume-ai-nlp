@@ -60,7 +60,19 @@ with app.app_context():
 @app.route("/health")
 def health_check():
     """Health check endpoint for Railway"""
-    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+    try:
+        # Simple health check - just return success
+        return {
+            "status": "healthy", 
+            "timestamp": datetime.now().isoformat(),
+            "service": "ResumeAI"
+        }, 200
+    except Exception as e:
+        return {
+            "status": "unhealthy", 
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        }, 500
 
 
 @app.route("/")
@@ -1067,10 +1079,18 @@ if __name__ == "__main__":
     # Cleanup old files on startup
     cleanup_old_files()
     
-    print("🚀 Starting Resume AI application...")
+    # Initialize database
+    with app.app_context():
+        db.create_all()
+    
+    print("� Startoing Resume AI application...")
     print("📄 Visit http://localhost:5000 in your browser")
     print(f"📁 Generated files will be saved to: {os.path.abspath(OUTPUT_DIR)}")
     print(f"🎨 Supported styles: {', '.join(SUPPORTED_STYLES)}")
     print(f"📋 Supported formats: {', '.join(SUPPORTED_FORMATS)}")
     
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Use different settings for production vs development
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('FLASK_ENV') == 'development'
+    
+    app.run(debug=debug, host='0.0.0.0', port=port)
