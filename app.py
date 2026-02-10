@@ -48,6 +48,16 @@ logger = logging.getLogger(__name__)
 OUTPUT_DIR = app.config['OUTPUT_DIR']
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+# Health check endpoint for UptimeRobot
+@app.route('/health')
+def health_check():
+    """Health check endpoint for monitoring services"""
+    return jsonify({
+        'status': 'healthy',
+        'timestamp': datetime.now().isoformat(),
+        'service': 'ResumeAI'
+    }), 200
+
 # Supported styles and formats
 SUPPORTED_STYLES = app.config['SUPPORTED_STYLES']
 SUPPORTED_FORMATS = app.config['SUPPORTED_FORMATS']
