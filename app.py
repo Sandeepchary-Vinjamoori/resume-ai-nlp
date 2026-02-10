@@ -550,7 +550,7 @@ def edit_resume(resume_id):
 @app.route("/download_resume_file/<resume_id>")
 @login_required
 def download_resume_file(resume_id):
-    """Download a saved resume file"""
+    """Download a saved resume file as PDF"""
     try:
         # Get resume (ensure it belongs to current user)
         resume = Resume.query.filter_by(id=resume_id, user_id=current_user.id).first()
@@ -559,30 +559,74 @@ def download_resume_file(resume_id):
             flash('Resume not found', 'error')
             return redirect(url_for('dashboard.dashboard'))
         
+        # Validate resume content
+        if not resume.content or not resume.content.strip():
+            flash('Resume content is empty', 'error')
+            return redirect(url_for('dashboard.dashboard'))
+        
         # Create temporary file
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"resume_{resume.style}_{timestamp}.docx"
+        filename = f"resume_{resume.style}_{timestamp}.pdf"
         filepath = os.path.join(OUTPUT_DIR, filename)
         
-        # Export to DOCX
-        export_to_docx(resume.content, filepath)
+        # Ensure output directory exists
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
+        
+        # Use the EXACT SAME export method as review page
+        try:
+            # Use NUCLEAR LEFT ALIGNMENT PDF export (same as review page)
+            from core.simple_pdf import create_simple_pdf
+            logger.info("🎯 Using NUCLEAR LEFT ALIGNMENT PDF export (same as review page)")
+            success = create_simple_pdf(resume.content, filepath)
+            
+            if not success:
+                # Final fallback to original PDF export
+                logger.warning("Nuclear PDF failed, using original export")
+                export_to_pdf(resume.content, filepath)
+            else:
+                logger.info("✅ Nuclear PDF created successfully - FORCED LEFT ALIGNMENT")
+                
+        except Exception as e:
+            logger.error(f"Nuclear PDF failed: {e}, using fallback")
+            export_to_pdf(resume.content, filepath)
+        
+        # Verify file was created successfully
+        if not os.path.exists(filepath) or os.path.getsize(filepath) == 0:
+            raise Exception("PDF file was not created successfully or is empty")
         
         # Get clean name for download
         form_data = resume.get_form_data()
         name = form_data.get('name', resume.title)
-        clean_name = name.replace(' ', '_').replace('.', '')
-        download_name = f"{clean_name}_Resume.docx"
+        # Clean filename more thoroughly
+        clean_name = ''.join(c for c in name if c.isalnum() or c in (' ', '-', '_')).strip()
+        clean_name = clean_name.replace(' ', '_')[:50]  # Limit length
+        if not clean_name:
+            clean_name = "Resume"
+        download_name = f"{clean_name}.pdf"
+        
+        # Clean up old files (optional - keep last 10 files)
+        try:
+            import glob
+            old_files = glob.glob(os.path.join(OUTPUT_DIR, "resume_*.pdf"))
+            old_files.sort(key=os.path.getctime)
+            for old_file in old_files[:-10]:  # Keep last 10 files
+                try:
+                    os.remove(old_file)
+                except:
+                    pass
+        except:
+            pass
         
         return send_file(
             filepath,
             as_attachment=True,
-            mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            mimetype="application/pdf",
             download_name=download_name
         )
         
     except Exception as e:
         logger.error(f"Error downloading resume: {str(e)}")
-        flash('Error downloading resume', 'error')
+        flash('Error downloading resume. Please try again.', 'error')
         return redirect(url_for('dashboard.dashboard'))
 
 

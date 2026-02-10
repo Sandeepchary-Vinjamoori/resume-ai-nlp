@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +15,7 @@
             padding: 20px;
             background: #f5f5f5;
         }
-        
+
         /* Notification System */
         .notification {
             position: fixed;
@@ -33,35 +34,35 @@
             transition: transform 0.3s ease-out;
             font-weight: 500;
         }
-        
+
         .notification.show {
             transform: translateX(0);
         }
-        
+
         .notification.success {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
         }
-        
+
         .notification.error {
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: white;
         }
-        
+
         .notification.info {
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             color: white;
         }
-        
+
         .notification-icon {
             font-size: 20px;
             flex-shrink: 0;
         }
-        
+
         .notification-content {
             flex: 1;
         }
-        
+
         .notification-close {
             background: none;
             border: none;
@@ -77,11 +78,11 @@
             border-radius: 50%;
             transition: background-color 0.2s ease;
         }
-        
+
         .notification-close:hover {
             background-color: rgba(255, 255, 255, 0.2);
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -89,29 +90,29 @@
             grid-template-columns: 1fr 300px;
             gap: 30px;
         }
-        
+
         .resume-display {
             background: white;
             padding: 40px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             min-height: 800px;
         }
-        
+
         .resume-content {
             font-family: 'Times New Roman', serif;
             line-height: 1.4;
             color: #333;
         }
-        
+
         .controls {
             background: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             height: fit-content;
         }
-        
+
         .btn {
             width: 100%;
             padding: 12px;
@@ -122,14 +123,32 @@
             font-size: 14px;
             font-weight: 600;
         }
-        
-        .btn-primary { background: #007bff; color: white; }
-        .btn-success { background: #28a745; color: white; }
-        .btn-warning { background: #ffc107; color: #212529; }
-        .btn-secondary { background: #6c757d; color: white; }
-        
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-        
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
         .edit-textarea {
             width: 100%;
             height: 600px;
@@ -140,7 +159,7 @@
             font-size: 14px;
             display: none;
         }
-        
+
         .style-selector {
             width: 100%;
             padding: 10px;
@@ -148,84 +167,85 @@
             border: 1px solid #ddd;
             border-radius: 6px;
         }
-        
+
         /* Force ALL content to be left-aligned except name and contact */
         .resume-content * {
             text-align: left !important;
         }
-        
+
         /* Override for name - must be centered */
         .resume-content .name,
-        .name { 
-            text-align: center !important; 
-            color: #000 !important; 
-            font-weight: bold !important; 
-            font-size: 18pt !important; 
-            margin: 0 0 8px 0 !important; 
+        .name {
+            text-align: center !important;
+            color: #000 !important;
+            font-weight: bold !important;
+            font-size: 18pt !important;
+            margin: 0 0 8px 0 !important;
         }
-        
+
         /* Override for contact - must be centered */
         .resume-content .contact,
-        .contact { 
-            text-align: center !important; 
-            color: #333 !important; 
-            margin: 0 0 16px 0 !important; 
+        .contact {
+            text-align: center !important;
+            color: #333 !important;
+            margin: 0 0 16px 0 !important;
         }
-        
-        .section { 
-            color: #2d8659 !important; 
-            font-weight: bold !important; 
-            border-bottom: 1px solid #2d8659 !important; 
-            margin: 16px 0 8px 0 !important; 
-            padding-bottom: 2px !important; 
-            font-size: 12pt !important; 
+
+        .section {
+            color: #2d8659 !important;
+            font-weight: bold !important;
+            border-bottom: 1px solid #2d8659 !important;
+            margin: 16px 0 8px 0 !important;
+            padding-bottom: 2px !important;
+            font-size: 12pt !important;
             text-align: left !important;
         }
-        
-        .content { 
-            text-align: left !important; 
-            color: #333 !important; 
-            margin: 2px 0 !important; 
+
+        .content {
+            text-align: left !important;
+            color: #333 !important;
+            margin: 2px 0 !important;
             padding-left: 0 !important;
             display: block !important;
             width: 100% !important;
         }
-        
-        .bullet { 
-            text-align: left !important; 
-            color: #333 !important; 
-            margin: 2px 0 2px 16px !important; 
+
+        .bullet {
+            text-align: left !important;
+            color: #333 !important;
+            margin: 2px 0 2px 16px !important;
             display: block !important;
         }
-        
+
         /* Extra specific rules to force left alignment for education content */
         .resume-content div:not(.name):not(.contact) {
             text-align: left !important;
             margin-left: 0 !important;
             padding-left: 0 !important;
         }
-        
+
         /* Ensure all text content is left-aligned */
         .resume-content p,
         .resume-content span,
         .resume-content div {
             text-align: left !important;
         }
-        
+
         /* Override any center alignment that might be inherited */
         .resume-content [style*="text-align: center"] {
             text-align: left !important;
         }
-        
+
         /* NUCLEAR EDUCATION ALIGNMENT FIX */
         .resume-content div:not(.name):not(.contact):not(.section):not(.bullet) {
             text-align: left !important;
             margin-left: 0 !important;
             padding-left: 0 !important;
             line-height: 1.4 !important;
-            margin: 1px 0 !important; /* Tighter spacing within entries */
+            margin: 1px 0 !important;
+            /* Tighter spacing within entries */
         }
-        
+
         /* Force ALL education content left - no exceptions */
         .resume-content .content {
             text-align: left !important;
@@ -234,16 +254,17 @@
             display: block !important;
             width: 100% !important;
             line-height: 1.4 !important;
-            margin: 1px 0 !important; /* Very tight spacing */
+            margin: 1px 0 !important;
+            /* Very tight spacing */
         }
-        
+
         /* Override any possible center alignment */
         .resume-content div[style*="center"]:not(.name):not(.contact),
         .resume-content div[align="center"]:not(.name):not(.contact) {
             text-align: left !important;
             margin-left: 0 !important;
         }
-        
+
         /* ULTRA SPECIFIC - TARGET UNIVERSITY CONTENT */
         .resume-content div:contains("University"):not(.name):not(.contact),
         .resume-content div:contains("College"):not(.name):not(.contact),
@@ -255,29 +276,29 @@
             display: block !important;
             width: 100% !important;
         }
-        
+
         /* NUCLEAR OPTION - OVERRIDE ANY INLINE STYLES */
         .resume-content [style*="text-align: center"]:not(.name):not(.contact) {
             text-align: left !important;
         }
-        
+
         .resume-content [style*="margin: auto"]:not(.name):not(.contact) {
             margin-left: 0 !important;
             margin-right: auto !important;
         }
-        
+
         /* CONTROL EMPTY LINE SPACING */
         .resume-content .empty-line {
             height: 2px !important;
             margin: 0 !important;
             padding: 0 !important;
         }
-        
+
         /* Remove default BR spacing */
         .resume-content br {
             display: none !important;
         }
-        
+
         /* Modal Styles */
         .modal {
             position: fixed;
@@ -291,7 +312,7 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .modal-content {
             background-color: white;
             border-radius: 8px;
@@ -300,18 +321,19 @@
             max-width: 500px;
             animation: modalSlideIn 0.3s ease-out;
         }
-        
+
         @keyframes modalSlideIn {
             from {
                 opacity: 0;
                 transform: translateY(-50px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        
+
         .modal-header {
             padding: 20px 24px 16px;
             border-bottom: 1px solid #eee;
@@ -319,13 +341,13 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .modal-header h3 {
             margin: 0;
             color: #333;
             font-size: 18px;
         }
-        
+
         .close {
             font-size: 24px;
             font-weight: bold;
@@ -333,22 +355,22 @@
             cursor: pointer;
             line-height: 1;
         }
-        
+
         .close:hover {
             color: #333;
         }
-        
+
         .modal-body {
             padding: 24px;
         }
-        
+
         .modal-body label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
             color: #333;
         }
-        
+
         .modal-body input {
             width: 100%;
             padding: 12px;
@@ -358,32 +380,32 @@
             margin-bottom: 16px;
             box-sizing: border-box;
         }
-        
+
         .modal-body input:focus {
             outline: none;
             border-color: #007bff;
         }
-        
+
         .modal-info {
             background: #f8f9fa;
             padding: 12px;
             border-radius: 6px;
             border-left: 4px solid #007bff;
         }
-        
+
         .modal-info p {
             margin: 0;
             color: #666;
             font-size: 14px;
         }
-        
+
         .modal-footer {
             padding: 16px 24px 24px;
             display: flex;
             gap: 12px;
             justify-content: flex-end;
         }
-        
+
         .modal-footer .btn {
             width: auto;
             margin: 0;
@@ -391,63 +413,66 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Notification Container -->
     <div id="notification-container"></div>
-    
+
     <div class="container">
         <div class="resume-display">
             <div id="resume-content" class="resume-content">
                 {% if resume_text %}
-                    {% set lines = resume_text.split('\n') %}
-                    {% for line in lines %}
-                        {% set trimmed = line.strip() %}
-                        {% if trimmed %}
-                            {% if loop.index0 == 0 and '|' not in trimmed and '@' not in trimmed %}
-                                <!-- Name - first line -->
-                                <div class="name">{{ line }}</div>
-                            {% elif '|' in trimmed or '@' in trimmed or (trimmed|length > 8 and (trimmed|regex_search('\d{10}'))) %}
-                                <!-- Contact info -->
-                                <div class="contact">{{ line }}</div>
-                            {% elif trimmed.upper() in ['PROFESSIONAL SUMMARY', 'SUMMARY', 'SKILLS', 'EDUCATION', 'EXPERIENCE', 'PROJECTS', 'CERTIFICATIONS'] or 'SUMMARY' in trimmed.upper() or 'EDUCATION' in trimmed.upper() or 'EXPERIENCE' in trimmed.upper() or 'PROJECTS' in trimmed.upper() or 'SKILLS' in trimmed.upper() %}
-                                <!-- Section headers -->
-                                <div class="section">{{ line }}</div>
-                            {% elif trimmed.startswith('-') and trimmed.replace('-', '').strip() == '' %}
-                                <!-- Skip horizontal lines -->
-                            {% elif trimmed.startswith('•') or trimmed.startswith('-') or trimmed.startswith('*') %}
-                                <!-- Bullet points -->
-                                <div class="bullet">{{ line }}</div>
-                            {% else %}
-                                <!-- All other content - including education details -->
-                                <div class="content" style="text-align: left !important;">{{ line }}</div>
-                            {% endif %}
-                        {% else %}
-                            <!-- Empty line - add minimal spacing only between education entries -->
-                            <div class="empty-line" style="height: 2px; margin: 0;"></div>
-                        {% endif %}
-                    {% endfor %}
+                {% set lines = resume_text.split('\n') %}
+                {% for line in lines %}
+                {% set trimmed = line.strip() %}
+                {% if trimmed %}
+                {% if loop.index0 == 0 and '|' not in trimmed and '@' not in trimmed %}
+                <!-- Name - first line -->
+                <div class="name">{{ line }}</div>
+                {% elif '|' in trimmed or '@' in trimmed or (trimmed|length > 8 and (trimmed|regex_search('\d{10}'))) %}
+                <!-- Contact info -->
+                <div class="contact">{{ line }}</div>
+                {% elif trimmed.upper() in ['PROFESSIONAL SUMMARY', 'SUMMARY', 'SKILLS', 'EDUCATION', 'EXPERIENCE',
+                'PROJECTS', 'CERTIFICATIONS'] or 'SUMMARY' in trimmed.upper() or 'EDUCATION' in trimmed.upper() or
+                'EXPERIENCE' in trimmed.upper() or 'PROJECTS' in trimmed.upper() or 'SKILLS' in trimmed.upper() %}
+                <!-- Section headers -->
+                <div class="section">{{ line }}</div>
+                {% elif trimmed.startswith('-') and trimmed.replace('-', '').strip() == '' %}
+                <!-- Skip horizontal lines -->
+                {% elif trimmed.startswith('•') or trimmed.startswith('-') or trimmed.startswith('*') %}
+                <!-- Bullet points -->
+                <div class="bullet">{{ line }}</div>
                 {% else %}
-                    <div style="text-align: center; padding: 40px; color: #666;">
-                        <h3>No Resume Content</h3>
-                        <p><a href="/">← Go Back to Form</a></p>
-                    </div>
+                <!-- All other content - including education details -->
+                <div class="content" style="text-align: left !important;">{{ line }}</div>
+                {% endif %}
+                {% else %}
+                <!-- Empty line - add minimal spacing only between education entries -->
+                <div class="empty-line" style="height: 2px; margin: 0;"></div>
+                {% endif %}
+                {% endfor %}
+                {% else %}
+                <div style="text-align: center; padding: 40px; color: #666;">
+                    <h3>No Resume Content</h3>
+                    <p><a href="/">← Go Back to Form</a></p>
+                </div>
                 {% endif %}
             </div>
             <textarea id="edit-textarea" class="edit-textarea">{{ resume_text if resume_text else '' }}</textarea>
         </div>
-        
+
         <div class="controls">
             <h3>Resume Controls</h3>
-            
+
             <button id="save-resume-btn" class="btn btn-success">💾 Save Resume</button>
-            
+
             <button id="edit-btn" class="btn btn-warning">✏️ Edit Resume</button>
             <button id="save-btn" class="btn btn-success" style="display: none;">💾 Save Changes</button>
             <button id="cancel-btn" class="btn btn-secondary" style="display: none;">❌ Cancel</button>
-            
+
             <button id="download-pdf" class="btn btn-primary">📄 Download PDF</button>
             <button id="download-docx" class="btn btn-primary">📝 Download DOCX</button>
-            
+
             <button id="regenerate-btn" class="btn btn-secondary">🔄 Regenerate</button>
             <button id="start-over-btn" class="btn btn-secondary">🏠 Start Over</button>
         </div>
@@ -462,7 +487,8 @@
             </div>
             <div class="modal-body">
                 <label for="resume-title">Resume Title:</label>
-                <input type="text" id="resume-title" placeholder="e.g., Software Engineer Resume, Marketing Manager CV" maxlength="100">
+                <input type="text" id="resume-title" placeholder="e.g., Software Engineer Resume, Marketing Manager CV"
+                    maxlength="100">
                 <div class="modal-info">
                     <p>Give your resume a descriptive name to easily find it later in your dashboard.</p>
                 </div>
@@ -477,27 +503,27 @@
     <script>
         let isEditing = false;
         let originalContent = '';
-        
+
         // MAKE INSTITUTION NAMES DARK AND FIX ALIGNMENT
         function makeInstitutionsDark() {
             console.log('🎨 NUCLEAR EDUCATION ALIGNMENT FIX...');
-            
+
             const resumeContent = document.getElementById('resume-content');
             if (!resumeContent) return;
-            
+
             // Find all divs
             const allDivs = resumeContent.querySelectorAll('div');
-            
+
             allDivs.forEach(div => {
                 const text = div.textContent.trim();
-                
+
                 // Skip headers
-                if (div.classList.contains('name') || 
-                    div.classList.contains('contact') || 
+                if (div.classList.contains('name') ||
+                    div.classList.contains('contact') ||
                     div.classList.contains('section')) {
                     return;
                 }
-                
+
                 // FORCE LEFT ALIGNMENT FOR ALL CONTENT
                 div.style.textAlign = 'left';
                 div.style.marginLeft = '0';
@@ -505,49 +531,49 @@
                 div.style.setProperty('text-align', 'left', 'important');
                 div.style.setProperty('margin-left', '0', 'important');
                 div.style.setProperty('padding-left', '0', 'important');
-                
+
                 // Make institution names DARK
-                if (text.includes('Anurag University') || 
+                if (text.includes('Anurag University') ||
                     text.includes('XYZ Junior College') ||
-                    text.includes('University') || 
-                    text.includes('College') || 
-                    text.includes('Institute') || 
+                    text.includes('University') ||
+                    text.includes('College') ||
+                    text.includes('Institute') ||
                     text.includes('School')) {
-                    
+
                     // Force dark styling
                     div.style.color = '#000';
                     div.style.fontWeight = '600';
                     div.style.setProperty('color', '#000', 'important');
                     div.style.setProperty('font-weight', '600', 'important');
-                    
+
                     console.log('🏫 FIXED & DARKENED:', text.substring(0, 50));
                 }
-                
+
                 // Fix GPA and other education content
-                else if (text.includes('GPA') || text.includes('Graduated') || 
-                         text.includes('Bachelor') || text.includes('Intermediate')) {
+                else if (text.includes('GPA') || text.includes('Graduated') ||
+                    text.includes('Bachelor') || text.includes('Intermediate')) {
                     div.style.setProperty('text-align', 'left', 'important');
                     console.log('📚 FIXED ALIGNMENT:', text.substring(0, 40));
                 }
             });
-            
+
             console.log('✅ NUCLEAR EDUCATION FIX COMPLETE');
         }
-        
+
         // Run immediately when script loads
         makeInstitutionsDark();
         setTimeout(makeInstitutionsDark, 100);
         setTimeout(makeInstitutionsDark, 500);
         setTimeout(makeInstitutionsDark, 1000);
         setTimeout(makeInstitutionsDark, 2000);
-        
+
         // ADDITIONAL NUCLEAR FIX - TARGET UNIVERSITY NAMES SPECIFICALLY
         function forceUniversityLeft() {
             console.log('🎯 TARGETING UNIVERSITY NAMES SPECIFICALLY...');
-            
+
             const resumeContent = document.getElementById('resume-content');
             if (!resumeContent) return;
-            
+
             // Get ALL text nodes and their parent elements
             const walker = document.createTreeWalker(
                 resumeContent,
@@ -555,17 +581,17 @@
                 null,
                 false
             );
-            
+
             let textNode;
             while (textNode = walker.nextNode()) {
                 const text = textNode.textContent.trim();
                 const parentElement = textNode.parentElement;
-                
+
                 // If text contains university/college names
-                if (text.includes('University') || text.includes('College') || 
+                if (text.includes('University') || text.includes('College') ||
                     text.includes('Institute') || text.includes('School') ||
                     text.includes('Anurag') || text.includes('XYZ')) {
-                    
+
                     // FORCE parent element left
                     parentElement.style.textAlign = 'left';
                     parentElement.style.marginLeft = '0';
@@ -573,64 +599,64 @@
                     parentElement.style.setProperty('text-align', 'left', 'important');
                     parentElement.style.setProperty('margin-left', '0', 'important');
                     parentElement.style.setProperty('padding-left', '0', 'important');
-                    
+
                     console.log('🎯 FORCED UNIVERSITY LEFT:', text.substring(0, 50));
                 }
             }
-            
+
             console.log('✅ University targeting complete');
         }
-        
+
         // Run university fix immediately and repeatedly
         forceUniversityLeft();
         setTimeout(forceUniversityLeft, 200);
         setTimeout(forceUniversityLeft, 600);
         setTimeout(forceUniversityLeft, 1200);
         setTimeout(forceUniversityLeft, 2500);
-        
+
         // Fix education formatting for professional appearance
         function fixEducationFormatting() {
             console.log('🎓 Fixing education formatting...');
-            
+
             const resumeContent = document.getElementById('resume-content');
             if (!resumeContent) return;
-            
+
             const allDivs = resumeContent.querySelectorAll('div');
-            
+
             allDivs.forEach((div, index) => {
                 const text = div.textContent.trim();
-                
+
                 // Skip name, contact, and section headers
-                if (div.classList.contains('name') || 
-                    div.classList.contains('contact') || 
+                if (div.classList.contains('name') ||
+                    div.classList.contains('contact') ||
                     div.classList.contains('section')) {
                     return;
                 }
-                
+
                 // Force left alignment for all content
                 div.style.textAlign = 'left';
                 div.style.marginLeft = '0';
                 div.style.paddingLeft = '0';
                 div.style.lineHeight = '1.4';
-                
+
                 // Degree lines (Bachelor, Master, etc.) - add top margin for separation
-                if (text.includes('Bachelor') || text.includes('Master') || 
+                if (text.includes('Bachelor') || text.includes('Master') ||
                     text.includes('Intermediate') || text.includes('Diploma')) {
                     div.style.marginTop = '12px'; // Space before new degree
                     div.style.marginBottom = '1px'; // Tight spacing after
                     div.style.fontWeight = '500';
                     console.log('🎓 Fixed degree with spacing:', text.substring(0, 40));
                 }
-                
+
                 // Institution and graduation lines - tight spacing
-                else if (text.includes('University') || text.includes('College') || 
-                         text.includes('Institute') || text.includes('School') ||
-                         text.includes('Graduated:')) {
+                else if (text.includes('University') || text.includes('College') ||
+                    text.includes('Institute') || text.includes('School') ||
+                    text.includes('Graduated:')) {
                     div.style.marginTop = '1px'; // Very tight
                     div.style.marginBottom = '1px'; // Very tight
                     console.log('🏫 Fixed institution with tight spacing:', text.substring(0, 40));
                 }
-                
+
                 // GPA lines - tight spacing to institution
                 else if (text.includes('GPA')) {
                     div.style.marginTop = '1px'; // Very tight to institution
@@ -639,39 +665,39 @@
                     div.style.fontSize = '0.95em';
                     console.log('📊 Fixed GPA with tight spacing:', text.substring(0, 30));
                 }
-                
+
                 // Achievement lines - tight spacing
                 else if (text.includes('Dean') || text.includes('list') || text.includes('course work')) {
                     div.style.marginTop = '1px'; // Very tight
                     div.style.marginBottom = '8px'; // Space after achievements before next degree
                     console.log('🏆 Fixed achievement with spacing:', text.substring(0, 30));
                 }
-                
+
                 // Empty lines - minimal spacing
                 else if (text === '' || div.classList.contains('empty-line')) {
                     div.style.height = '2px'; // Minimal spacing
                     div.style.margin = '0';
                     div.style.padding = '0';
                 }
-                
+
                 // All other content - tight spacing
                 else {
                     div.style.margin = '1px 0';
                 }
             });
-            
+
             console.log('✅ Education formatting with tight spacing complete');
         }
-        
-        document.addEventListener('DOMContentLoaded', function() {
+
+        document.addEventListener('DOMContentLoaded', function () {
             console.log('Review page loaded, initializing edit functionality...');
-            
+
             const editTextarea = document.getElementById('edit-textarea');
             const editBtn = document.getElementById('edit-btn');
             const saveBtn = document.getElementById('save-btn');
             const cancelBtn = document.getElementById('cancel-btn');
             const resumeContent = document.getElementById('resume-content');
-            
+
             console.log('Elements found:', {
                 editTextarea: !!editTextarea,
                 editBtn: !!editBtn,
@@ -679,32 +705,32 @@
                 cancelBtn: !!cancelBtn,
                 resumeContent: !!resumeContent
             });
-            
+
             if (editTextarea) {
                 originalContent = editTextarea.value;
                 console.log('Original content length:', originalContent.length);
             }
-            
+
             // Make institutions dark immediately and repeatedly
             makeInstitutionsDark();
             setTimeout(makeInstitutionsDark, 200);
             setTimeout(makeInstitutionsDark, 600);
             setTimeout(makeInstitutionsDark, 1200);
-            
+
             // ALSO RUN UNIVERSITY TARGETING
             forceUniversityLeft();
             setTimeout(forceUniversityLeft, 300);
             setTimeout(forceUniversityLeft, 800);
             setTimeout(forceUniversityLeft, 1500);
-            
+
             // Fix education formatting immediately and with delays
             fixEducationFormatting();
             setTimeout(fixEducationFormatting, 500);
             setTimeout(fixEducationFormatting, 1000);
-            
+
             // Edit functionality
             if (editBtn) {
-                editBtn.addEventListener('click', function() {
+                editBtn.addEventListener('click', function () {
                     console.log('Edit button clicked');
                     isEditing = true;
                     if (resumeContent) resumeContent.style.display = 'none';
@@ -716,16 +742,16 @@
             } else {
                 console.error('Edit button not found!');
             }
-            
+
             if (saveBtn) {
-                saveBtn.addEventListener('click', function() {
+                saveBtn.addEventListener('click', function () {
                     console.log('Save button clicked');
                     const updatedContent = editTextarea ? editTextarea.value : '';
                     if (!updatedContent.trim()) {
                         alert('Resume content cannot be empty.');
                         return;
                     }
-                    
+
                     console.log('Sending update request...');
                     fetch('/update_resume', {
                         method: 'POST',
@@ -735,53 +761,53 @@
                             style: document.getElementById('style-selector').value
                         })
                     })
-                    .then(response => {
-                        console.log('Update response received:', response.status);
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Update response data:', data);
-                        if (data.success) {
-                            // Update the resume content with the returned HTML
-                            if (data.resume_html && resumeContent) {
-                                resumeContent.innerHTML = data.resume_html;
+                        .then(response => {
+                            console.log('Update response received:', response.status);
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Update response data:', data);
+                            if (data.success) {
+                                // Update the resume content with the returned HTML
+                                if (data.resume_html && resumeContent) {
+                                    resumeContent.innerHTML = data.resume_html;
+                                }
+
+                                // Switch back to view mode
+                                if (resumeContent) resumeContent.style.display = 'block';
+                                if (editTextarea) editTextarea.style.display = 'none';
+                                if (editBtn) editBtn.style.display = 'block';
+                                if (saveBtn) saveBtn.style.display = 'none';
+                                if (cancelBtn) cancelBtn.style.display = 'none';
+                                isEditing = false;
+
+                                // Update original content for future cancels
+                                originalContent = editTextarea ? editTextarea.value : '';
+
+                                // Make institutions dark after save
+                                setTimeout(makeInstitutionsDark, 100);
+                                setTimeout(makeInstitutionsDark, 300);
+
+                                // FORCE UNIVERSITY LEFT AFTER SAVE
+                                setTimeout(forceUniversityLeft, 150);
+                                setTimeout(forceUniversityLeft, 400);
+
+                                console.log('Resume updated successfully without page reload');
+                            } else {
+                                alert('Error: ' + data.error);
                             }
-                            
-                            // Switch back to view mode
-                            if (resumeContent) resumeContent.style.display = 'block';
-                            if (editTextarea) editTextarea.style.display = 'none';
-                            if (editBtn) editBtn.style.display = 'block';
-                            if (saveBtn) saveBtn.style.display = 'none';
-                            if (cancelBtn) cancelBtn.style.display = 'none';
-                            isEditing = false;
-                            
-                            // Update original content for future cancels
-                            originalContent = editTextarea ? editTextarea.value : '';
-                            
-                            // Make institutions dark after save
-                            setTimeout(makeInstitutionsDark, 100);
-                            setTimeout(makeInstitutionsDark, 300);
-                            
-                            // FORCE UNIVERSITY LEFT AFTER SAVE
-                            setTimeout(forceUniversityLeft, 150);
-                            setTimeout(forceUniversityLeft, 400);
-                            
-                            console.log('Resume updated successfully without page reload');
-                        } else {
-                            alert('Error: ' + data.error);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Update error:', error);
-                        alert('Error: ' + error.message);
-                    });
+                        })
+                        .catch(error => {
+                            console.error('Update error:', error);
+                            alert('Error: ' + error.message);
+                        });
                 });
             } else {
                 console.error('Save button not found!');
             }
 
             if (cancelBtn) {
-                cancelBtn.addEventListener('click', function() {
+                cancelBtn.addEventListener('click', function () {
                     console.log('Cancel button clicked');
                     if (editTextarea) editTextarea.value = originalContent;
                     if (resumeContent) resumeContent.style.display = 'block';
@@ -794,54 +820,54 @@
             } else {
                 console.error('Cancel button not found!');
             }
-            
+
             // Download functionality
             const downloadPdfBtn = document.getElementById('download-pdf');
             const downloadDocxBtn = document.getElementById('download-docx');
-            
+
             if (downloadPdfBtn) {
-                downloadPdfBtn.addEventListener('click', function() {
+                downloadPdfBtn.addEventListener('click', function () {
                     console.log('Download PDF clicked');
                     downloadResume('pdf');
                 });
             }
-            
+
             if (downloadDocxBtn) {
-                downloadDocxBtn.addEventListener('click', function() {
+                downloadDocxBtn.addEventListener('click', function () {
                     console.log('Download DOCX clicked');
                     downloadResume('docx');
                 });
             }
-            
+
             const regenerateBtn = document.getElementById('regenerate-btn');
             if (regenerateBtn) {
-                regenerateBtn.addEventListener('click', function() {
+                regenerateBtn.addEventListener('click', function () {
                     console.log('Regenerate clicked');
                     if (confirm('Regenerate resume?')) {
                         fetch('/regenerate_resume', { method: 'POST' })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) location.reload();
-                            else alert('Error: ' + data.error);
-                        })
-                        .catch(error => {
-                            console.error('Regenerate error:', error);
-                            alert('Error: ' + error.message);
-                        });
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) location.reload();
+                                else alert('Error: ' + data.error);
+                            })
+                            .catch(error => {
+                                console.error('Regenerate error:', error);
+                                alert('Error: ' + error.message);
+                            });
                     }
                 });
             }
-            
+
             const startOverBtn = document.getElementById('start-over-btn');
             if (startOverBtn) {
-                startOverBtn.addEventListener('click', function() {
+                startOverBtn.addEventListener('click', function () {
                     console.log('Start over clicked');
                     if (confirm('Start over?')) {
                         window.location.href = '/';
                     }
                 });
             }
-            
+
             // Save Resume functionality
             const saveResumeBtn = document.getElementById('save-resume-btn');
             const saveModal = document.getElementById('save-resume-modal');
@@ -849,100 +875,100 @@
             const cancelSave = document.getElementById('cancel-save');
             const confirmSave = document.getElementById('confirm-save');
             const resumeTitleInput = document.getElementById('resume-title');
-            
+
             if (saveResumeBtn) {
-                saveResumeBtn.addEventListener('click', function() {
+                saveResumeBtn.addEventListener('click', function () {
                     console.log('Save resume clicked');
                     showSaveModal();
                 });
             }
-            
+
             if (closeModal) {
                 closeModal.addEventListener('click', hideSaveModal);
             }
-            
+
             if (cancelSave) {
                 cancelSave.addEventListener('click', hideSaveModal);
             }
-            
+
             if (confirmSave) {
                 confirmSave.addEventListener('click', saveResume);
             }
-            
+
             // Close modal when clicking outside
             if (saveModal) {
-                saveModal.addEventListener('click', function(e) {
+                saveModal.addEventListener('click', function (e) {
                     if (e.target === saveModal) {
                         hideSaveModal();
                     }
                 });
             }
-            
+
             // Handle Enter key in title input
             if (resumeTitleInput) {
-                resumeTitleInput.addEventListener('keypress', function(e) {
+                resumeTitleInput.addEventListener('keypress', function (e) {
                     if (e.key === 'Enter') {
                         saveResume();
                     }
                 });
             }
         });
-        
+
         function showSaveModal() {
             const modal = document.getElementById('save-resume-modal');
             const titleInput = document.getElementById('resume-title');
-            
+
             if (modal && titleInput) {
                 modal.style.display = 'flex';
                 titleInput.focus();
-                
+
                 // Generate a default title based on current date
                 const now = new Date();
-                const dateStr = now.toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'short', 
-                    day: 'numeric' 
+                const dateStr = now.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
                 });
                 titleInput.placeholder = `Resume - ${dateStr}`;
             }
         }
-        
+
         function hideSaveModal() {
             const modal = document.getElementById('save-resume-modal');
             const titleInput = document.getElementById('resume-title');
-            
+
             if (modal && titleInput) {
                 modal.style.display = 'none';
                 titleInput.value = '';
             }
         }
-        
+
         function saveResume() {
             const titleInput = document.getElementById('resume-title');
             const title = titleInput.value.trim();
-            
+
             if (!title) {
                 showNotification('Please enter a title for your resume.', 'warning');
                 titleInput.focus();
                 return;
             }
-            
+
             if (title.length < 3) {
                 showNotification('Resume title must be at least 3 characters long.', 'warning');
                 titleInput.focus();
                 return;
             }
-            
+
             // Show loading state
             const confirmBtn = document.getElementById('confirm-save');
             const originalText = confirmBtn.textContent;
             confirmBtn.textContent = 'Saving...';
             confirmBtn.disabled = true;
-            
+
             // Get current resume content
             const resumeText = document.getElementById('edit-textarea').value;
             const style = '{{ style }}'; // Get current style from template
-            
+
             // Send save request
             fetch('/save_resume', {
                 method: 'POST',
@@ -955,103 +981,103 @@
                     style: style
                 })
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showNotification(data.message || 'Resume saved successfully!', 'success', 3000);
-                    hideSaveModal();
-                    
-                    // Automatically redirect to dashboard after a short delay
-                    setTimeout(() => {
-                        window.location.href = '/dashboard';
-                    }, 1500);
-                } else {
-                    // Handle authentication required
-                    if (data.error && data.error.includes('login')) {
-                        if (confirm('You need to sign in to save resumes. Would you like to sign in now?')) {
-                            // Store current resume in session for after login
-                            fetch('/store_temp_resume', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    content: resumeText,
-                                    style: style,
-                                    title: title
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(storeData => {
-                                if (storeData.success) {
-                                    // Redirect to signin with return URL
-                                    window.location.href = '/auth/signin?next=' + encodeURIComponent('/save_temp_resume_after_auth');
-                                } else {
-                                    // Fallback to regular signin
-                                    window.location.href = '/auth/signin';
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error storing temp resume:', error);
-                                window.location.href = '/auth/signin';
-                            });
-                        }
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification(data.message || 'Resume saved successfully!', 'success', 3000);
+                        hideSaveModal();
+
+                        // Automatically redirect to dashboard after a short delay
+                        setTimeout(() => {
+                            window.location.href = '/dashboard';
+                        }, 1500);
                     } else {
-                        showNotification('Error: ' + (data.error || 'Failed to save resume'), 'error');
+                        // Handle authentication required
+                        if (data.error && data.error.includes('login')) {
+                            if (confirm('You need to sign in to save resumes. Would you like to sign in now?')) {
+                                // Store current resume in session for after login
+                                fetch('/store_temp_resume', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        content: resumeText,
+                                        style: style,
+                                        title: title
+                                    })
+                                })
+                                    .then(response => response.json())
+                                    .then(storeData => {
+                                        if (storeData.success) {
+                                            // Redirect to signin with return URL
+                                            window.location.href = '/auth/signin?next=' + encodeURIComponent('/save_temp_resume_after_auth');
+                                        } else {
+                                            // Fallback to regular signin
+                                            window.location.href = '/auth/signin';
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error storing temp resume:', error);
+                                        window.location.href = '/auth/signin';
+                                    });
+                            }
+                        } else {
+                            showNotification('Error: ' + (data.error || 'Failed to save resume'), 'error');
+                        }
                     }
-                }
-            })
-            .catch(error => {
-                console.error('Save error:', error);
-                showNotification('Error saving resume: ' + error.message, 'error');
-            })
-            .finally(() => {
-                // Reset button state
-                confirmBtn.textContent = originalText;
-                confirmBtn.disabled = false;
-            });
+                })
+                .catch(error => {
+                    console.error('Save error:', error);
+                    showNotification('Error saving resume: ' + error.message, 'error');
+                })
+                .finally(() => {
+                    // Reset button state
+                    confirmBtn.textContent = originalText;
+                    confirmBtn.disabled = false;
+                });
         }
-        
+
         // Notification System Functions
         function showNotification(message, type = 'success', duration = 4000) {
             const container = document.getElementById('notification-container');
             if (!container) return;
-            
+
             // Create notification element
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
-            
+
             // Set icon based on type
             let icon = '✅';
             if (type === 'error') icon = '❌';
             if (type === 'info') icon = 'ℹ️';
             if (type === 'warning') icon = '⚠️';
-            
+
             notification.innerHTML = `
                 <div class="notification-icon">${icon}</div>
                 <div class="notification-content">${message}</div>
                 <button class="notification-close" onclick="hideNotification(this.parentElement)">×</button>
             `;
-            
+
             // Add to container
             container.appendChild(notification);
-            
+
             // Trigger animation
             setTimeout(() => {
                 notification.classList.add('show');
             }, 10);
-            
+
             // Auto-hide after duration
             setTimeout(() => {
                 hideNotification(notification);
             }, duration);
-            
+
             return notification;
         }
-        
+
         function hideNotification(notification) {
             if (!notification) return;
-            
+
             notification.classList.remove('show');
             setTimeout(() => {
                 if (notification.parentElement) {
@@ -1059,21 +1085,21 @@
                 }
             }, 300);
         }
-        
+
         function hideAllNotifications() {
             const notifications = document.querySelectorAll('.notification');
             notifications.forEach(hideNotification);
         }
-        
+
         function downloadResume(format) {
             const resumeText = document.getElementById('edit-textarea').value;
             const style = '{{ style }}'; // Get current style from template
-            
+
             if (!resumeText.trim()) {
                 showNotification('No content to download.', 'warning');
                 return;
             }
-            
+
             fetch('/download_resume', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1083,23 +1109,24 @@
                     format: format
                 })
             })
-            .then(response => {
-                if (!response.ok) throw new Error('Download failed');
-                return response.blob();
-            })
-            .then(blob => {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `resume.${format}`;
-                a.click();
-                URL.revokeObjectURL(url);
-                showNotification(`Resume downloaded as ${format.toUpperCase()}`, 'success');
-            })
-            .catch(error => {
-                showNotification('Download error: ' + error.message, 'error');
-            });
+                .then(response => {
+                    if (!response.ok) throw new Error('Download failed');
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `resume.${format}`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    showNotification(`Resume downloaded as ${format.toUpperCase()}`, 'success');
+                })
+                .catch(error => {
+                    showNotification('Download error: ' + error.message, 'error');
+                });
         }
     </script>
 </body>
+
 </html>

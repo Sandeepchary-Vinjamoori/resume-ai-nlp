@@ -174,50 +174,70 @@ def export_to_docx(resume_text, filepath):
 
 
 def export_to_pdf(resume_text, filepath):
-    """Export resume text to PDF file with multi-page support"""
+    """Export resume text to PDF file using simple, reliable method"""
     try:
+        from .pdf_exporter import create_simple_pdf
+        return create_simple_pdf(resume_text, filepath)
+    except ImportError:
+        # Fallback to basic method if pdf_exporter not available
+        return _create_basic_pdf_fallback(resume_text, filepath)
+    except Exception as e:
+        logger.error(f"PDF export failed: {e}")
+        return _create_basic_pdf_fallback(resume_text, filepath)
+
+
+def _create_basic_pdf_fallback(resume_text, filepath):
+    """Most basic PDF creation as final fallback"""
+    try:
+        from reportlab.pdfgen import canvas
         from reportlab.lib.pagesizes import letter
-        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
-        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-        from reportlab.lib.units import inch
-        from reportlab.lib.colors import darkblue, black, Color
-        from reportlab.lib.enums import TA_LEFT, TA_CENTER
         
-        # Define the exact teal/green color from web display
-        teal_color = Color(45/255, 134/255, 89/255)  # #2d8659 converted to RGB
-        
-        logger.info(f"Creating PDF file: {filepath}")
-        logger.info(f"Resume text length: {len(resume_text)} characters")
+        logger.info("Using basic PDF fallback")
         
         # Ensure directory exists
         dir_path = os.path.dirname(filepath)
         if dir_path:
             os.makedirs(dir_path, exist_ok=True)
         
-        # Create PDF document with proper margins for multi-page content
-        doc = SimpleDocTemplate(
-            filepath,
-            pagesize=letter,
-            rightMargin=0.75*inch,
-            leftMargin=0.75*inch,
-            topMargin=0.75*inch,
-            bottomMargin=0.75*inch
-        )
+        c = canvas.Canvas(filepath, pagesize=letter)
+        width, height = letter
         
-        # Get styles
-        styles = getSampleStyleSheet()
+        y_position = height - 100
+        lines = resume_text.split('\n')
         
-        # Custom styles to match web display exactly
-        name_style = ParagraphStyle(
-            'ResumeName',
-            parent=styles['Normal'],
-            fontSize=18,  # Match web display (18pt)
-            spaceAfter=8,
-            spaceBefore=0,
-            alignment=TA_CENTER,  # Centered
-            textColor=black,  # Dark black like web display
-            fontName='Times-Bold'
-        )
+        c.setFont("Helvetica", 11)
+        
+        for line in lines:
+            line = line.strip()
+            if not line:
+                y_position -= 15
+                continue
+            
+            # Clean line
+            clean_line = ''.join(char if ord(char) < 127 else ' ' for char in line)
+            clean_line = clean_line.strip()[:80]  # Limit length
+            
+            if not clean_line:
+                continue
+            
+            if y_position < 50:
+                c.showPage()
+                c.setFont("Helvetica", 11)
+                y_position = height - 100
+            
+            try:
+                c.drawString(50, y_position, clean_line)
+                y_position -= 15
+            except:
+                continue
+        
+        c.save()
+        
+        return os.path.exists(filepath) and os.path.getsize(filepath) > 100
+        
+    except Exception as e:
+        logger.error(f"Basic PDF fallback also failed: {e}")
+        return False
         
         contact_style = ParagraphStyle(
             'ContactInfo',
